@@ -41,7 +41,7 @@ Once built, the .deb file will be available in the dist/ directory.
 ## 🛠️ Installation
 To install the .deb file on Ubuntu:
 
-sudo dpkg -i dist/YouTubeApp*.deb
+sudo dpkg -i youtube*.deb
 
 ✅ This app has only been tested on Ubuntu LTS (22.04+)
 
