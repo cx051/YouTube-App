@@ -31,27 +31,23 @@ A lightweight YouTube desktop client built with Electron, enhanced with the Ghos
 
 To build the `.deb` package for Ubuntu Linux:
 
-```bash
 npm install
 npm run dist
 Once built, the .deb file will be available in the dist/ directory.
 
-🛠️ Installation
+## 🛠️ Installation
 To install the .deb file on Ubuntu:
 
-bash
-￼Copy
-￼Edit
 sudo dpkg -i dist/YouTubeApp*.deb
 ✅ This app has only been tested on Ubuntu LTS (22.04+)
 
-📁 Download
+## 📁 Download
 Download the latest .deb release from the Releases page.
 
-👤 Author
+## 👤 Author
 Made with ❤️ by cx051
 No email or other metadata is included for privacy reasons.
-## 🛡️ License
 
+## 🛡️ License
 This project is licensed under the [ISC License](LICENSE).
 
