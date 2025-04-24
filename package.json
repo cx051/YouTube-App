@@ -1,0 +1,43 @@
+{
+  "name": "youtube",
+  "version": "1.0.0",
+  "description": "YouTube app with ad blocker and performance optimizations",
+  "main": "main.js",
+  "author": "cx051",
+  "homepage": "https://github.com/cx051/youtube-app",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "@ghostery/adblocker-electron": "^2.5.1",
+    "cross-fetch": "^4.1.0"
+  },
+  "devDependencies": {
+    "electron": "^35.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.cx051.youtubeapp",
+    "productName": "YouTubeApp",
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "assets/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "icon": "assets/YouTube (original).png",
+      "category": "Video",
+      "maintainer": "cx051"
+    }
+  }
+}
