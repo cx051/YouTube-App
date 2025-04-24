@@ -1,5 +1,7 @@
 # YouTubeApp
 
+![Logo](assets/YouTube.svg)
+
 A lightweight YouTube desktop client built with Electron, enhanced with the Ghostery ad blocker and performance tweaks for a distraction-free viewing experience.
 
 > ⚠️ **Disclaimer**: This is a personal project I built for use on my Ubuntu LTS system. It's essentially an Electron wrapper around YouTube with a custom toolbar and a few extra features like ad blocking. I do **not** plan to maintain this project regularly or ensure compatibility across all systems.
@@ -49,4 +51,7 @@ Download the latest .deb release from the Releases page.
 👤 Author
 Made with ❤️ by cx051
 No email or other metadata is included for privacy reasons.
+## 🛡️ License
+
+This project is licensed under the [ISC License](LICENSE).
 
