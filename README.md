@@ -1,6 +1,6 @@
 # YouTubeApp
 
-![Logo](assets/YouTube.svg)
+   ![Logo](assets/YouTube.svg)
 
 A lightweight YouTube desktop client built with Electron, enhanced with the Ghostery ad blocker and performance tweaks for a distraction-free viewing experience.
 
@@ -18,6 +18,7 @@ A lightweight YouTube desktop client built with Electron, enhanced with the Ghos
 - 🧹 One-click browsing data cleanup  
 - 🎯 Zoom in/out support  
 - 🔒 Privacy-focused
+- 🌟 Glassy effect on homepage while scrolling for a sleek, modern look.
 
 ---
 
