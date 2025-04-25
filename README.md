@@ -35,7 +35,9 @@ A lightweight YouTube desktop client built with Electron, enhanced with the Ghos
 To build the `.deb` package for Ubuntu Linux:
 
 npm install
+
 npm run dist
+
 Once built, the .deb file will be available in the dist/ directory.
 
 ## 🛠️ Installation
@@ -50,6 +52,7 @@ Download the latest .deb release from the Releases page.
 
 ## 👤 Author
 Made with ❤️ by cx051
+
 No email or other metadata is included for privacy reasons.
 
 ## 🛡️ License
