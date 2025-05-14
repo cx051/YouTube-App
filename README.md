@@ -18,7 +18,6 @@ A lightweight YouTube desktop client built with Electron, enhanced with the Ghos
 - 🧹 One-click browsing data cleanup  
 - 🎯 Zoom in/out support  
 - 🔒 Privacy-focused
-- 🌟 Glassy effect on homepage while scrolling for a sleek, modern look.
 
 ---
 
