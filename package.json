@@ -1,6 +1,6 @@
 {
   "name": "youtube",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "YouTube app with ad blocker and performance optimizations",
   "main": "main.js",
   "author": "cx051",
@@ -9,10 +9,10 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder --linux --win"
   },
   "dependencies": {
-    "@ghostery/adblocker-electron": "^2.5.1",
+    "@ghostery/adblocker-electron": "^2.5.2",
     "cross-fetch": "^4.1.0"
   },
   "devDependencies": {
@@ -26,7 +26,8 @@
       "index.html",
       "main.js",
       "preload.js",
-      "assets/**/*"
+      "assets/**/*",
+      "node_modules/@ghostery/adblocker-electron/**/*"
     ],
     "directories": {
       "buildResources": "assets"
@@ -38,6 +39,15 @@
       "icon": "assets/YouTube (original).png",
       "category": "Video",
       "maintainer": "cx051"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/YouTube.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }

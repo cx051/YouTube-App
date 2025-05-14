@@ -1,338 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>YouTube App</title>
-<style>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #121212;
-  color: #e0e0e0;
-  -webkit-user-select: none;
-}
+  <meta charset="UTF-8" />
+  <title>YouTube App</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #121212;
+      color: #e0e0e0;
+      -webkit-user-select: none;
+    }
 
-#toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 8px;
-  background-color: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid #222;
-  -webkit-app-region: drag;
-  height: 32px;
-}
+    #toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px;
+      background-color: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #222;
+      -webkit-app-region: drag;
+      height: 32px;
+    }
 
-.toolbar-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  -webkit-app-region: no-drag;
-}
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
 
-.toolbar-button {
-  background-color: rgba(40, 40, 40, 0.8);
-  border: none;
-  color: white;
-  padding: 3px 7px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold; /* Make icons bold */
-  font-size: 14px; /* Adjust font size for better visibility */
-  transition: all 0.2s ease;
-}
+    .toolbar-button {
+      background-color: rgba(40, 40, 40, 0.8);
+      border: none;
+      color: white;
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
 
-.toolbar-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
+    .toolbar-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
 
-.window-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  -webkit-app-region: no-drag;
-}
+    .window-controls .toolbar-button {
+      width: 14px;
+      height: 14px;
+      padding: 0;
+      background-color: transparent;
+      border: none;
+      transition: transform 0.2s ease;
+    }
 
-.window-controls .toolbar-button {
-  width: 14px; /* Slightly larger size */
-  height: 14px; /* Slightly larger size */
-  padding: 0;
-  background-color: transparent;
-  border: none;
-  transition: transform 0.2s ease;
-}
+    .window-controls .toolbar-button:hover {
+      transform: scale(1.2);
+    }
 
-.window-controls .toolbar-button:hover {
-  transform: scale(1.2);
-}
+    #close-btn {
+      background-color: #ff5f56;
+    }
 
-#close-btn {
-  background-color: #ff5f56;
-  border-color: #ff5f56;
-}
-#minimize-btn {
-  background-color: #ffbd2e;
-  border-color: #ffbd2e;
-}
-#maximize-btn {
-  background-color: #27c93f;
-  border-color: #27c93f;
-}
+    #minimize-btn {
+      background-color: #ffbd2e;
+    }
 
-#clear-data-btn {
-  background-color: rgba(255, 80, 80, 0.9);
-  color: white;
-  font-size: 12px;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
+    #maximize-btn {
+      background-color: #27c93f;
+    }
 
-#menu-btn {
-  font-size: 16px;
-  color: white;
-  margin-right: 8px;
-  background-color: transparent; /* Ensure no background */
-  border: none; /* Ensure no border */
-  box-shadow: none; /* Remove circular outline */
-  padding: 0; /* No padding */
-  width: 24px; /* Match the size of other toolbar buttons */
-  height: 24px; /* Match the size of other toolbar buttons */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    #clear-data-btn {
+      background-color: rgba(255, 80, 80, 0.9);
+      color: white;
+      font-size: 12px;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
 
-#menu-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
-  border-radius: 4px; /* Add slight rounding for hover */
-}
+    #menu-btn {
+      font-size: 16px;
+      color: white;
+      margin-right: 8px;
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-#clear-data-btn:hover {
-  background-color: rgba(255, 40, 40, 0.9);
-  box-shadow: 0 0 6px rgba(255, 40, 40, 0.5);
-}
+    #menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
 
-#reload-btn.animate {
-  animation: spin 0.6s ease-in-out;
-}
+    #clear-data-btn:hover {
+      background-color: rgba(255, 40, 40, 0.9);
+      box-shadow: 0 0 6px rgba(255, 40, 40, 0.5);
+    }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    #reload-btn.animate {
+      animation: spin 0.6s ease-in-out;
+    }
 
-/* Transparent icons for back, forward, and reload buttons */
-#back-btn,
-#forward-btn,
-#reload-btn {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  font-size: 18px;
-  line-height: 1;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-#back-btn:hover,
-#forward-btn:hover,
-#reload-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-}
+    #back-btn,
+    #forward-btn,
+    #reload-btn {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
 
-#webview-container {
-  flex: 1;
-  position: relative;
-  background-color: #121212;
-}
+    #back-btn:hover,
+    #forward-btn:hover,
+    #reload-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
 
-webview {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+    #webview-container {
+      flex: 1;
+      position: relative;
+      background-color: #121212;
+    }
 
-#toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(40, 40, 40, 0.9);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 9999;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-#toast.show {
-  opacity: 1;
-}
+    webview {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(40, 40, 40, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  top: 26px;
-  right: 0;
-  background-color: rgba(40, 40, 40, 0.9);
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  border-radius: 4px;
-  overflow: hidden;
-}
+    #toast.show {
+      opacity: 1;
+    }
 
-.dropdown-content button {
-  color: white;
-  padding: 8px 12px;
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: bold; /* Make text bold */
-}
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
 
-.dropdown-content button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-</style>
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 26px;
+      right: 0;
+      background-color: rgba(40, 40, 40, 0.9);
+      min-width: 160px;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dropdown-content button {
+      color: white;
+      padding: 8px 12px;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .dropdown-content button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
 </head>
 <body>
-
-<div id="toolbar">
-  <div class="toolbar-group">
-    <button class="toolbar-button" id="back-btn"><span class="icon">⮜</span></button>
-    <button class="toolbar-button" id="forward-btn"><span class="icon">⮞</span></button>
-    <button class="toolbar-button" id="reload-btn"><span class="icon reload-icon">⟳</span></button>
-  </div>
-
-  <div class="toolbar-group window-controls">
-    <div class="dropdown">
-      <button class="toolbar-button" id="menu-btn">☰</button>
-      <div class="dropdown-content" id="dropdown-content">
-        <button id="zoom-in-btn">Zoom In (+)</button>
-        <button id="zoom-out-btn">Zoom Out (−)</button>
-        <button id="clear-data-btn">Clear Data 🗑️</button>
-      </div>
+  <div id="toolbar">
+    <div class="toolbar-group">
+      <button class="toolbar-button" id="back-btn"><span class="icon">⮜</span></button>
+      <button class="toolbar-button" id="forward-btn"><span class="icon">⮞</span></button>
+      <button class="toolbar-button" id="reload-btn"><span class="icon reload-icon">⟳</span></button>
     </div>
-    <button class="toolbar-button" id="minimize-btn"></button>
-    <button class="toolbar-button" id="maximize-btn"></button>
-    <button class="toolbar-button" id="close-btn"></button>
+    <div class="toolbar-group window-controls">
+      <div class="dropdown">
+        <button class="toolbar-button" id="menu-btn">☰</button>
+        <div class="dropdown-content" id="dropdown-content">
+          <button id="zoom-in-btn">Zoom In (+)</button>
+          <button id="zoom-out-btn">Zoom Out (−)</button>
+          <button id="clear-data-btn">Clear Data 🗑️</button>
+        </div>
+      </div>
+      <button class="toolbar-button" id="minimize-btn"></button>
+      <button class="toolbar-button" id="maximize-btn"></button>
+      <button class="toolbar-button" id="close-btn"></button>
+    </div>
   </div>
-</div>
+  <div id="webview-container">
+    <webview id="youtube-view" src="https://www.youtube.com" allowpopups></webview>
+  </div>
+  <div id="toast"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const { electronAPI } = window;
+      const webview = document.getElementById('youtube-view');
+      const reloadBtn = document.getElementById('reload-btn');
 
-<div id="webview-container">
-  <webview id="youtube-view" src="https://www.youtube.com" allowpopups></webview>
-</div>
+      document.getElementById('back-btn').addEventListener('click', () => webview.goBack());
+      document.getElementById('forward-btn').addEventListener('click', () => webview.goForward());
 
-<div id="toast"></div>
+      reloadBtn.addEventListener('click', () => {
+        reloadBtn.classList.add('animate');
+        webview.reload();
+        setTimeout(() => reloadBtn.classList.remove('animate'), 600);
+      });
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const { electronAPI } = window; // Access the exposed electronAPI
-  const webview = document.getElementById('youtube-view');
+      document.getElementById('zoom-out-btn').addEventListener('click', async () => {
+        const level = await webview.getZoomLevel();
+        webview.setZoomLevel(level - 0.5);
+        closeDropdown();
+      });
 
-  document.getElementById('back-btn').addEventListener('click', () => webview.goBack());
-  document.getElementById('forward-btn').addEventListener('click', () => webview.goForward());
+      document.getElementById('zoom-in-btn').addEventListener('click', async () => {
+        const level = await webview.getZoomLevel();
+        webview.setZoomLevel(level + 0.5);
+        closeDropdown();
+      });
 
-  const reloadBtn = document.getElementById('reload-btn');
-  reloadBtn.addEventListener('click', () => {
-    reloadBtn.classList.add('animate');
-    webview.reload();
-    setTimeout(() => reloadBtn.classList.remove('animate'), 600);
-  });
+      document.getElementById('minimize-btn').addEventListener('click', () => electronAPI.minimizeWindow());
+      document.getElementById('maximize-btn').addEventListener('click', () => electronAPI.toggleMaximize());
+      document.getElementById('close-btn').addEventListener('click', () => electronAPI.closeWindow());
+      document.getElementById('clear-data-btn').addEventListener('click', () => {
+        electronAPI.clearData();
+        closeDropdown();
+      });
 
-  document.getElementById('zoom-out-btn').addEventListener('click', async () => {
-    const level = await webview.getZoomLevel();
-    webview.setZoomLevel(level - 0.5);
-    closeDropdown();
-  });
+      electronAPI.onClearDataResult((_event, { success }) => {
+        showToast(success ? '✅ Browsing data cleared!' : '❌ Failed to clear data.');
+      });
 
-  document.getElementById('zoom-in-btn').addEventListener('click', async () => {
-    const level = await webview.getZoomLevel();
-    webview.setZoomLevel(level + 0.5);
-    closeDropdown();
-  });
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
 
-  document.getElementById('minimize-btn').addEventListener('click', () => electronAPI.minimizeWindow());
-  document.getElementById('maximize-btn').addEventListener('click', () => electronAPI.toggleMaximize());
-  document.getElementById('close-btn').addEventListener('click', () => electronAPI.closeWindow());
+      // Dropdown logic
+      const dropdownContent = document.getElementById('dropdown-content');
+      const menuBtn = document.getElementById('menu-btn');
 
-  document.getElementById('clear-data-btn').addEventListener('click', () => {
-    electronAPI.clearData(); // Use the exposed clearData function
-    closeDropdown();
-  });
+      function toggleDropdown() {
+        if (dropdownContent.style.display === 'block') {
+          closeDropdown();
+        } else {
+          openDropdown();
+        }
+      }
 
-  electronAPI.onClearDataResult((_event, { success }) => { // Use the exposed onClearDataResult function
-    showToast(success ? '✅ Browsing data cleared!' : '❌ Failed to clear data.');
-  });
+      function openDropdown() {
+        dropdownContent.style.display = 'block';
+        document.addEventListener('click', handleClickOutside);
+      }
 
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
+      function closeDropdown() {
+        dropdownContent.style.display = 'none';
+        document.removeEventListener('click', handleClickOutside);
+      }
 
-  // Dropdown logic
-  const dropdownContent = document.getElementById('dropdown-content');
-  const menuBtn = document.getElementById('menu-btn');
+      function handleClickOutside(event) {
+        const dropdown = document.querySelector('.dropdown');
+        if (!dropdown.contains(event.target)) {
+          closeDropdown();
+        }
+      }
 
-  function toggleDropdown() {
-    if (dropdownContent.style.display === 'block') {
-      closeDropdown();
-    } else {
-      openDropdown();
-    }
-  }
-
-  function openDropdown() {
-    dropdownContent.style.display = 'block';
-    document.addEventListener('click', handleClickOutside);
-  }
-
-  function closeDropdown() {
-    dropdownContent.style.display = 'none';
-    document.removeEventListener('click', handleClickOutside);
-  }
-
-  function handleClickOutside(event) {
-    const dropdown = document.querySelector('.dropdown');
-    if (!dropdown.contains(event.target)) {
-      closeDropdown();
-    }
-  }
-
-  menuBtn.addEventListener('click', toggleDropdown);
-
-  // Close dropdown when an option is clicked
-  dropdownContent.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', closeDropdown);
-  });
-});
-</script>
-
+      menuBtn.addEventListener('click', toggleDropdown);
+      dropdownContent.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', closeDropdown);
+      });
+    });
+  </script>
 </body>
 </html>

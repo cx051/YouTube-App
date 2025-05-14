@@ -5,51 +5,54 @@ const fetch = require('cross-fetch');
 
 require('events').EventEmitter.defaultMaxListeners = 100;
 
-// Disable throttling and backgrounding to improve performance
+// Disable throttling to improve performance
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
 let mainWindow;
-
-const ZOOM_LIMITS = {
-  MIN: -3,
-  MAX: 3,
-};
+const ZOOM_LIMITS = { MIN: -3, MAX: 3 };
 let currentZoomLevel = 0;
 
 async function createWindow() {
-  const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
-  blocker.enableBlockingInSession(session.defaultSession, {
-    enableCompression: true,
-    whitelist: ['www.youtube.com', 'i.ytimg.com', 'ytimg.com'],
-  });
+  try {
+    const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+    await blocker.enableBlockingInSession(session.defaultSession, {
+      enableCompression: true,
+      whitelist: ['www.youtube.com', 'i.ytimg.com', 'ytimg.com'],
+    });
 
-  const preloadPath = path.join(__dirname, 'preload.js');
-  console.log('Preload script path:', preloadPath);
+    const preloadPath = path.join(__dirname, 'preload.js');
+    const iconPath = process.platform === 'win32'
+      ? path.join(__dirname, 'assets', 'YouTube.ico')
+      : path.join(__dirname, 'assets', 'YouTube (original).png');
 
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    autoHideMenuBar: true,
-    frame: false,
-    show: true,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      sandbox: true,
-      preload: preloadPath,
-      webviewTag: true,
-    },
-  });
+    mainWindow = new BrowserWindow({
+      width: 1024,
+      height: 768,
+      autoHideMenuBar: true,
+      frame: false,
+      show: true,
+      icon: iconPath,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        sandbox: true,
+        preload: preloadPath,
+        webviewTag: true,
+      },
+    });
 
-  mainWindow.loadFile('index.html').catch(error => {
-    console.error('Error loading index.html:', error);
-  });
+    mainWindow.loadFile('index.html').catch(err => {
+      console.error('Failed to load index.html:', err);
+    });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+  } catch (err) {
+    console.error('Error creating window:', err);
+  }
 }
 
 // Navigation
@@ -79,7 +82,7 @@ ipcMain.on('zoom-out', () => {
   }
 });
 
-// Clear browsing data and send result to renderer
+// Clear browsing data
 ipcMain.on('clear-browsing-data', async () => {
   if (!mainWindow) return;
 
@@ -95,9 +98,11 @@ ipcMain.on('clear-browsing-data', async () => {
 
 // App lifecycle
 app.whenReady().then(createWindow);
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
+
 app.on('activate', () => {
-  if (mainWindow === null) createWindow();
+  if (!mainWindow) createWindow();
 });
