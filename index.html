@@ -14,6 +14,7 @@
       background-color: #121212;
       color: #e0e0e0;
       -webkit-user-select: none;
+      user-select: none;
     }
 
     #toolbar {
@@ -21,11 +22,19 @@
       align-items: center;
       justify-content: space-between;
       padding: 4px 8px;
-      background-color: rgba(0, 0, 0, 0.7);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      border-bottom: 1px solid #222;
+      background: linear-gradient(90deg,
+        rgba(0,0,0,0.95) 0%,
+        rgba(8,8,8,0.93) 70%,
+        rgba(26,1,2,0.92) 85%,
+        rgba(64,9,11,0.94) 97%,
+        rgba(255,34,34,0.16) 100%
+      );
+      box-shadow: 0 2px 16px 0 #000c;
+      border-bottom: 1px solid #1a0102;
       -webkit-app-region: drag;
       height: 32px;
+      backdrop-filter: blur(13px) saturate(1.25);
+      background-blend-mode: lighten;
     }
 
     .toolbar-group {
@@ -44,11 +53,37 @@
       cursor: pointer;
       font-weight: bold;
       font-size: 14px;
-      transition: all 0.2s ease;
+      transition: all 0.12s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1.5px 4px rgba(0,0,0,0.14);
+      position: relative;
+      outline: none;
+      user-select: none;
+    }
+    .toolbar-button.heavy-press {
+      transform: scale(0.88);
+      background: linear-gradient(180deg, #232326 80%, #151516 100%);
+      box-shadow: 0 2px 12px 0 #000b, 0 0 0 2px #ff2222 inset;
+      color: #ff2222;
+      filter: brightness(1.15);
     }
 
-    .toolbar-button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+    .toolbar-button:hover, .toolbar-button:focus {
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 0px #fff0;
+      outline: none;
+    }
+    #back-btn:hover, #forward-btn:hover, #reload-btn:hover,
+    #back-btn:focus, #forward-btn:focus, #reload-btn:focus {
+      background: rgba(255,255,255,0.14);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.09);
+      border-radius: 10px;
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    #back-btn:active, #forward-btn:active, #reload-btn:active {
+      background: rgba(255,34,34,0.13);
+      box-shadow: 0 0 0 6px rgba(255,34,34,0.12);
+      border-radius: 10px;
+      transition: background 0.16s, box-shadow 0.16s;
     }
 
     .window-controls .toolbar-button {
@@ -109,14 +144,7 @@
       box-shadow: 0 0 6px rgba(255, 40, 40, 0.5);
     }
 
-    #reload-btn.animate {
-      animation: spin 0.6s ease-in-out;
-    }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
 
     #back-btn,
     #forward-btn,
@@ -143,34 +171,62 @@
 
     #webview-container {
       flex: 1;
-      position: relative;
-      background-color: #121212;
+      background: #111;
+      display: flex;
+      min-height: 0;
+      /* Performance: No box-shadow, no filters, no border */
     }
-
     webview {
       width: 100%;
       height: 100%;
       border: none;
+      background: #111;
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+      /* Performance: No CSS filters, no border-radius, no box-shadow */
     }
 
     #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(40, 40, 40, 0.9);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 9999;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      display: none;
     }
-
-    #toast.show {
+    .toast-instance {
+      position: fixed;
+      bottom: 18px;
+      right: 20px;
+      left: auto;
+      background: #000;
+      color: #fff;
+      padding: 6px 16px 6px 16px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      min-width: 80px;
+      max-width: 170px;
+      text-align: left;
+      margin-bottom: 4px;
+      border: none;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 8px #000e;
+      z-index: 9999;
       opacity: 1;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      transition: opacity 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    .toast-glow-red {
+      box-shadow: -12px 0 24px -6px #ff2222cc;
+      border-left: 3px solid #ff2222;
+    }
+    .toast-glow-green {
+      box-shadow: -12px 0 24px -6px #22ff44cc;
+      border-left: 3px solid #22ff44;
+    }
+    .toast-glow-neutral {
+      box-shadow: -12px 0 24px -6px #222a;
+      border-left: 3px solid #444;
     }
 
     .dropdown {
@@ -181,36 +237,176 @@
     .dropdown-content {
       display: none;
       position: absolute;
-      top: 26px;
+      top: 28px;
       right: 0;
-      background-color: rgba(40, 40, 40, 0.9);
-      min-width: 160px;
-      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-      z-index: 1;
-      border-radius: 4px;
+      min-width: 180px;
+      background: rgba(24,24,26,0.88);
+      border-radius: 14px;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.23), 0 1.5px 6px rgba(255,34,34,0.06);
+      backdrop-filter: blur(10px) saturate(1.5);
+      border: 1.5px solid rgba(60,60,60,0.22);
       overflow: hidden;
+      padding: 7px 0 7px 0;
+      animation: dropdownIn 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+      to { opacity: 1; transform: none; }
     }
 
     .dropdown-content button {
-      color: white;
-      padding: 8px 12px;
+      color: #fff;
+      padding: 4px 10px;
       text-decoration: none;
-      display: block;
+      display: flex;
+      align-items: center;
       width: 100%;
       text-align: left;
       border: none;
-      background-color: transparent;
+      background: transparent;
       cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 11px;
+      font-weight: 500;
+      position: relative;
+      border-radius: 5px;
+      margin: 0 6px 2px 6px;
+      transition: background 0.18s cubic-bezier(.4,0,.2,1), color 0.18s cubic-bezier(.4,0,.2,1);
+      gap: 0;
+      letter-spacing: 0.01em;
+      min-height: 22px;
+      height: 22px;
+      box-sizing: border-box;
+      justify-content: flex-start;
     }
+    .dropdown-content button:last-child { margin-bottom: 0; }
+    .dropdown-content .menu-icon, .dropdown-content .menu-label { display: none !important; }
+    .dropdown-content button:last-child { margin-bottom: 0; }
 
     .dropdown-content button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background: linear-gradient(90deg, #2a2a2e 80%, #ff2222 100%);
+      color: #ff2222;
+      box-shadow: 0 2px 8px 0 #ff22222e;
     }
-  </style>
+    .dropdown-content button .menu-icon {
+      position: absolute;
+      left: 13px;
+      font-size: 1.12em;
+      opacity: 0.85;
+      filter: drop-shadow(0 1px 2px #000a);
+      width: 18px;
+      text-align: center;
+    }
+  .dropdown-content-react {
+      display: none;
+      position: absolute;
+      top: 34px;
+      right: 0;
+      min-width: 190px;
+      background: rgba(30,30,35,0.93);
+      border-radius: 14px;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.23), 0 1.5px 6px rgba(255,34,34,0.09);
+      backdrop-filter: blur(13px) saturate(1.4);
+      border: 1.5px solid rgba(60,60,60,0.22);
+      overflow: hidden;
+      padding: 8px 0 8px 0;
+      animation: dropdownIn 0.26s cubic-bezier(.4,0,.2,1);
+      z-index: 1000;
+    }
+    .dropdown-btn-react {
+      color: #fff;
+      padding: 12px 22px 12px 44px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      position: relative;
+      border-radius: 9px;
+      margin: 0 10px 4px 10px;
+      transition: background 0.17s cubic-bezier(.4,0,.2,1), color 0.17s cubic-bezier(.4,0,.2,1);
+      gap: 13px;
+    }
+    .dropdown-btn-react:last-child { margin-bottom: 0; }
+    .dropdown-btn-react:hover, .dropdown-btn-react:focus {
+      background: none;
+      color: #fff;
+      box-shadow: none;
+      outline: none;
+    }
+    .menu-icon-react {
+      position: absolute;
+      left: 15px;
+      font-size: 1.18em;
+      opacity: 0.93;
+      filter: drop-shadow(0 1px 2px #000a);
+      width: 22px;
+      text-align: center;
+    }
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-18px) scale(0.98); }
+      to { opacity: 1; transform: none; }
+    }
+.restart-modal-content {
+  background: linear-gradient(120deg, #0a0a0a 60%, #1a0102 100%);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px #000c, 0 0 0 2px #2a0a12 inset;
+  padding: 28px 36px 22px 36px;
+  min-width: 260px;
+  max-width: 90vw;
+  text-align: center;
+  border: 1.5px solid #1a0102;
+  font-family: inherit;
+}
+#restart-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.44);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.restart-modal-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.restart-modal-body {
+  font-size: 1em;
+  margin-bottom: 18px;
+  color: #fff;
+}
+.restart-modal-actions {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+.restart-modal-actions button {
+  padding: 6px 22px;
+  border-radius: 7px;
+  border: none;
+  background: linear-gradient(90deg, #1a0102 60%, #222 100%);
+  color: #fff;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1.5px 8px #0008;
+  transition: background 0.15s, color 0.15s;
+}
+.restart-modal-actions button:hover {
+  background: #ff2222;
+  color: #fff;
+}
+</style>
 </head>
 <body>
+  <div id="splash-root"></div>
   <div id="toolbar">
     <div class="toolbar-group">
       <button class="toolbar-button" id="back-btn"><span class="icon">⮜</span></button>
@@ -219,13 +415,18 @@
     </div>
     <div class="toolbar-group window-controls">
       <div class="dropdown">
-        <button class="toolbar-button" id="menu-btn">☰</button>
-        <div class="dropdown-content" id="dropdown-content">
-          <button id="zoom-in-btn">Zoom In (+)</button>
-          <button id="zoom-out-btn">Zoom Out (−)</button>
-          <button id="clear-data-btn">Clear Data 🗑️</button>
-        </div>
-      </div>
+  <button class="toolbar-button" id="menu-btn">☰</button>
+  <div class="dropdown-content" id="dropdown-content">
+    <button id="zoom-in-btn">Zoom In</button>
+    <button id="zoom-out-btn">Zoom Out</button>
+    <button id="clear-data-btn">Clear Data</button>
+    <button id="hwaccel-btn">
+      Hardware Acceleration
+      <input type="checkbox" id="hwaccel-toggle" style="margin-left:8px;vertical-align:middle;" />
+    </button>
+    <button id="toggle-sound-btn">Sound Effects: <span id="sound-effect-status">On</span></button>
+  </div>
+</div>
       <button class="toolbar-button" id="minimize-btn"></button>
       <button class="toolbar-button" id="maximize-btn"></button>
       <button class="toolbar-button" id="close-btn"></button>
@@ -234,51 +435,201 @@
   <div id="webview-container">
     <webview id="youtube-view" src="https://www.youtube.com" allowpopups></webview>
   </div>
+  <audio id="ui-pop-audio" src="assets/audio/ui-pop.ogg" preload="auto"></audio>
+  <audio id="notification-audio" src="assets/audio/notification.ogg" preload="auto"></audio>
   <div id="toast"></div>
+  <script type="module" src="scripts/splash-entry.js"></script>
+  <script type="module" src="scripts/dropdown-entry.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const { electronAPI } = window;
       const webview = document.getElementById('youtube-view');
       const reloadBtn = document.getElementById('reload-btn');
 
-      document.getElementById('back-btn').addEventListener('click', () => webview.goBack());
-      document.getElementById('forward-btn').addEventListener('click', () => webview.goForward());
+      function heavyPress(btn) {
+        btn.classList.add('heavy-press');
+        setTimeout(() => btn.classList.remove('heavy-press'), 220);
+      }
+      document.getElementById('back-btn').addEventListener('click', () => {
+        heavyPress(document.getElementById('back-btn'));
+        webview.goBack();
+        showToast('Went Back');
+      });
+      document.getElementById('forward-btn').addEventListener('click', () => {
+        heavyPress(document.getElementById('forward-btn'));
+        webview.goForward();
+        showToast('Went Forward');
+      });
 
       reloadBtn.addEventListener('click', () => {
-        reloadBtn.classList.add('animate');
         webview.reload();
-        setTimeout(() => reloadBtn.classList.remove('animate'), 600);
+        showToast('Reloading…');
       });
 
-      document.getElementById('zoom-out-btn').addEventListener('click', async () => {
-        const level = await webview.getZoomLevel();
-        webview.setZoomLevel(level - 0.5);
-        closeDropdown();
+      // Inject custom adblock script into webview after navigation
+      // This is non-blocking and only runs on YouTube domains
+      webview.addEventListener('did-navigate', injectCustomAdblock);
+      webview.addEventListener('did-navigate-in-page', injectCustomAdblock);
+      webview.addEventListener('dom-ready', injectCustomAdblock);
+      async function injectCustomAdblock() {
+        const url = webview.getURL();
+        if (!/youtube\.com/.test(url)) return;
+        // Fetch and inject script asynchronously, non-blocking
+        fetch('custom-adblock.js')
+          .then(res => res.text())
+          .then(script => webview.executeJavaScript(script, false));
+      } // End custom adblock injection
+
+
+      // Dropdown closes when clicking outside
+      document.addEventListener('mousedown', function(e) {
+        const dropdown = document.getElementById('dropdown-content');
+        const menuBtn = document.getElementById('menu-btn');
+        if (dropdown && dropdown.style.display === 'block') {
+          if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
+            dropdown.style.display = 'none';
+          }
+        }
       });
 
-      document.getElementById('zoom-in-btn').addEventListener('click', async () => {
-        const level = await webview.getZoomLevel();
-        webview.setZoomLevel(level + 0.5);
-        closeDropdown();
+      // Sound effect toggle
+      let soundEffectsEnabled = true; // UI sounds ON by default
+      function playSound(id) {
+        if (!soundEffectsEnabled) return;
+        const audio = document.getElementById(id);
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play();
+        }
+      }
+      document.getElementById('back-btn').addEventListener('click', () => playSound('ui-pop-audio'));
+      document.getElementById('forward-btn').addEventListener('click', () => playSound('ui-pop-audio'));
+      document.getElementById('reload-btn').addEventListener('click', () => playSound('ui-pop-audio'));
+      const minBtn = document.getElementById('minimize-btn');
+      const maxBtn = document.getElementById('maximize-btn');
+      const closeBtn = document.getElementById('close-btn');
+      if (minBtn) minBtn.addEventListener('click', () => playSound('ui-pop-audio'));
+      if (maxBtn) maxBtn.addEventListener('click', () => playSound('ui-pop-audio'));
+      if (closeBtn) closeBtn.addEventListener('click', () => playSound('ui-pop-audio'));
+      // Notification sound example usage:
+      window.playNotificationSound = () => playSound('notification-audio');
+
+      // Use event delegation for dropdown action buttons (works even if rendered by React)
+      document.body.addEventListener('click', async (e) => {
+        const t = e.target.closest('button');
+        if (!t || !t.id) return;
+        if (t.id === 'zoom-in-btn') {
+          const level = await webview.getZoomLevel();
+          const newLevel = level + 0.5;
+          webview.setZoomLevel(newLevel);
+          showToast(`Zoomed in to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+        }
+        if (t.id === 'zoom-out-btn') {
+          const level = await webview.getZoomLevel();
+          const newLevel = level - 0.5;
+          webview.setZoomLevel(newLevel);
+          showToast(`Zoomed out to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+        }
+        if (t.id === 'clear-data-btn') {
+          showToast('Clearing data…', 'neutral');
+          electronAPI.clearData();
+        }
+        if (t.id === 'hwaccel-btn') {
+          // Checkbox toggled by click
+          const toggle = document.getElementById('hwaccel-toggle');
+          const enabled = toggle.checked;
+          electronAPI.setHardwareAcceleration(enabled);
+          showToast(`Hardware acceleration ${enabled ? 'enabled' : 'disabled'}`, enabled ? 'success' : 'neutral');
+        }
+        if (t.id === 'toggle-sound-btn') {
+          soundEffectsEnabled = !soundEffectsEnabled;
+          document.getElementById('sound-effect-status').textContent = soundEffectsEnabled ? 'On' : 'Off';
+          showToast(`Sound Effects ${soundEffectsEnabled ? 'Enabled' : 'Disabled'}`);
+        }
       });
 
-      document.getElementById('minimize-btn').addEventListener('click', () => electronAPI.minimizeWindow());
-      document.getElementById('maximize-btn').addEventListener('click', () => electronAPI.toggleMaximize());
-      document.getElementById('close-btn').addEventListener('click', () => electronAPI.closeWindow());
-      document.getElementById('clear-data-btn').addEventListener('click', () => {
-        electronAPI.clearData();
-        closeDropdown();
-      });
+      // Hardware acceleration toggle: ensure checkbox reflects current state
+      const hwaccelToggle = document.getElementById('hwaccel-toggle');
+      if (hwaccelToggle) {
+        electronAPI.getHardwareAcceleration().then(enabled => {
+          hwaccelToggle.checked = !!enabled;
+        });
+        hwaccelToggle.addEventListener('change', async (e) => {
+          const result = await electronAPI.setHardwareAcceleration(hwaccelToggle.checked);
+          if (result && result.restartRequired) {
+            showRestartModal();
+          }
+        });
+      }
+
+      // Modal for restart
+      function showRestartModal() {
+        let modal = document.getElementById('restart-modal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'restart-modal';
+          modal.innerHTML = `
+            <div class="restart-modal-content">
+              <div class="restart-modal-title">Restart Required</div>
+              <div class="restart-modal-body">Hardware acceleration change requires a restart.<br>Restart now or later?</div>
+              <div class="restart-modal-actions">
+                <button id="restart-now-btn">Restart Now</button>
+                <button id="restart-later-btn">Later</button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+          document.getElementById('restart-now-btn').onclick = async () => {
+            modal.remove(); // Hide modal immediately
+            try {
+              await electronAPI.restartApp();
+              setTimeout(() => {
+                // If app didn't relaunch after 2.5s, show a toast
+                showToast('Restart failed. Please restart manually.', 'error');
+              }, 2500);
+            } catch (e) {
+              showToast('Restart failed. Please restart manually.', 'error');
+            }
+          };
+          document.getElementById('restart-later-btn').onclick = () => {
+            modal.remove();
+          };
+        }
+        modal.style.display = 'flex';
+      }
+
+      // Always re-attach window control listeners for reliability, including after dropdown renders
+      function attachWindowControls() {
+        const minBtn = document.getElementById('minimize-btn');
+        const maxBtn = document.getElementById('maximize-btn');
+        const closeBtn = document.getElementById('close-btn');
+        if (minBtn) minBtn.onclick = () => electronAPI.minimizeWindow();
+        if (maxBtn) maxBtn.onclick = () => electronAPI.toggleMaximize();
+        if (closeBtn) closeBtn.onclick = () => electronAPI.closeWindow();
+      }
+      attachWindowControls();
+      // Also re-attach after a short delay in case React renders late
+      setTimeout(attachWindowControls, 100);
+      setTimeout(attachWindowControls, 500);
+
+      // Startup performance: Dropdown menu is now rendered only on demand (React portal), minimizing initial load time.
+
 
       electronAPI.onClearDataResult((_event, { success }) => {
-        showToast(success ? '✅ Browsing data cleared!' : '❌ Failed to clear data.');
+        showToast(success ? 'Browsing data cleared!' : 'Failed to clear data.', success ? 'success' : 'error');
       });
 
-      function showToast(message) {
-        const toast = document.getElementById('toast');
+      // Support for multiple toasts with colored glow
+      function showToast(message, type = 'neutral') {
+        let toast = document.createElement('div');
+        toast.className = 'toast-instance toast-glow-' + (type === 'success' ? 'green' : type === 'error' ? 'red' : 'neutral');
         toast.textContent = message;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
+        // Stack vertically if multiple
+        const existing = document.querySelectorAll('.toast-instance').length;
+        toast.style.bottom = `${18 + existing * 36}px`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = 0; }, 1800);
+        setTimeout(() => { toast.remove(); }, 2200);
       }
 
       // Dropdown logic
@@ -316,5 +667,15 @@
       });
     });
   </script>
+<script type="module" src="splash-entry.js"></script>
+<script>
+  // When the main app is loaded, dispatch the event to remove splash
+  window.addEventListener('DOMContentLoaded', () => {
+    // You might want to delay this until YouTube or your main content is ready
+    setTimeout(() => {
+      document.dispatchEvent(new Event('app-loaded'));
+    }, 1000); // Simulate load, adjust as needed
+  });
+</script>
 </body>
 </html>

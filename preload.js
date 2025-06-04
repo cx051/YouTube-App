@@ -12,5 +12,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   zoomIn: () => ipcRenderer.send('zoom-in'),
   zoomOut: () => ipcRenderer.send('zoom-out'),
   clearData: () => ipcRenderer.send('clear-browsing-data'),
-  onClearDataResult: (callback) => ipcRenderer.on('clear-data-result', callback)
+  onClearDataResult: (callback) => ipcRenderer.on('clear-data-result', callback),
+  getHardwareAcceleration: () => ipcRenderer.invoke('get-hardware-acceleration'),
+  setHardwareAcceleration: (enabled) => ipcRenderer.invoke('set-hardware-acceleration', enabled),
+  toggleHardwareAcceleration: () => ipcRenderer.invoke('toggle-hardware-acceleration'),
+  restartApp: () => ipcRenderer.invoke('restart-app'),
 });

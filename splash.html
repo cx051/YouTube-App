@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8" />
+  <title>Loading...</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #18181b;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-container">
+    <div class="logo">
+      <img src="assets/YouTube (original).png" alt="YouTube" width="72" height="72" style="filter: drop-shadow(0 2px 12px #ff2222cc); background: #0a0a0a; border-radius: 16px;" />
+    </div>
+    <audio id="splash-intro-audio" src="assets/audio/splash-intro.ogg" preload="auto" loop autoplay tabindex="-1" aria-hidden="true" style="width:1px;height:1px;opacity:0;position:absolute;"></audio>
+    <div class="loader" id="initial-loader">
+      <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
+    <div class="split-text" id="splitText">YouTube</div>
+    <div class="byline" id="byline">made with ♥ by <b>cx051</b></div>
+    <div class="loader" id="main-loader">
+      <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
+  </div>
+  <style>
+    body, html {
+      width: 100%; height: 100%; margin: 0; padding: 0;
+      background: #18181b;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .splash-container {
+      width: 440px; height: 340px;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0102 80%, #40090b 100%);
+      border-radius: 0;
+      box-shadow: 0 12px 48px #000e;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative;
+      opacity: 0;
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1);
+      overflow: hidden;
+      animation: splashFadeIn 1.2s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes splashFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .logo {
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .split-text {
+      font-size: 48px;
+      font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #000a;
+      display: flex;
+      gap: 2px;
+      margin-bottom: 14px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .split-text span {
+      opacity: 0;
+      transform: translateY(32px) scale(0.96) rotate(-6deg);
+      display: inline-block;
+      animation: splitIn 2.2s cubic-bezier(.4,0,.2,1) forwards;
+      will-change: opacity, transform;
+      animation-delay: 0.2s;
+    }
+    .split-text span:nth-child(1) { animation-delay: 0.28s; color: #fff; }
+    .split-text span:nth-child(2) { animation-delay: 0.42s; color: #fff; }
+    .split-text span:nth-child(3) { animation-delay: 0.56s; color: #fff; }
+    .split-text span:nth-child(4) { animation-delay: 0.70s; color: #fff; }
+    .split-text span:nth-child(5) { animation-delay: 0.84s; color: #ff2222; }
+    .split-text span:nth-child(6) { animation-delay: 0.98s; color: #fff; }
+    .split-text span:nth-child(7) { animation-delay: 1.12s; color: #fff; }
+    .split-text span:nth-child(8) { animation-delay: 1.26s; color: #fff; }
+
+    @keyframes splitIn {
+      0% { opacity: 0; transform: translateY(32px) scale(0.96) rotate(-6deg); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .byline {
+      font-size: 16px;
+      color: #fff9;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: 1.2px;
+      opacity: 0.92;
+      font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+      font-weight: 400;
+      transition: opacity 0.2s;
+    }
+    .byline b {
+      font-weight: 900;
+      color: #fff;
+      filter: brightness(1.7) drop-shadow(0 0 8px #ff2222cc) drop-shadow(0 0 4px #fff6);
+      text-shadow: 0 0 12px #ff2222cc, 0 0 24px #fff6;
+      letter-spacing: 2px;
+    }
+    .loader {
+      margin-top: 10px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      width: 48px;
+      height: 48px;
+    }
+    .lds-ring div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      margin: 5px;
+      border: 4px solid #ff5e5e;
+      border-radius: 50%;
+      animation: lds-ring 1.2s cubic-bezier(.4,0,.2,1) infinite;
+      border-color: #ff5e5e transparent transparent transparent;
+    }
+    .lds-ring div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+    .lds-ring div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+    .lds-ring div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+    @keyframes lds-ring {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .fade-out {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+  </style>
+  <script>
+    // Hide split-text and byline at first, show only initial loader
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('splitText').style.opacity = '0';
+      document.getElementById('byline').style.display = 'none';
+      // Play splash intro
+      const splashAudio = document.getElementById('splash-intro-audio');
+      if (splashAudio) {
+        splashAudio.volume = 0.33;
+        splashAudio.play().catch(()=>{});
+      }
+
+      document.getElementById('main-loader').style.display = 'none';
+      // Split "YouTube" into spans for animation
+      const splitText = document.getElementById('splitText');
+      const text = splitText.textContent;
+      splitText.innerHTML = '';
+      for(let i=0; i<text.length; ++i) {
+        const span = document.createElement('span');
+        span.textContent = text[i];
+        splitText.appendChild(span);
+      }
+      // After 800ms, show split-text and byline, hide initial loader, show main loader
+      setTimeout(() => {
+        splitText.style.opacity = '1';
+        document.getElementById('byline').style.display = '';
+        document.getElementById('main-loader').style.display = '';
+        document.getElementById('initial-loader').style.display = 'none';
+      }, 800);
+    });
+    // Listen for close-splash event from Electron
+    window.electronSplashClose = () => {
+      document.querySelector('.splash-container').classList.add('fade-out');
+      setTimeout(() => { window.close(); }, 800);
+    }
+  </script>
+</body>
+</html>

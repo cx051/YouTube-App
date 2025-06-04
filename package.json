@@ -1,6 +1,6 @@
 {
   "name": "youtube",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "YouTube app with ad blocker and performance optimizations",
   "main": "main.js",
   "author": "cx051",
@@ -12,8 +12,12 @@
     "dist": "electron-builder --linux --win"
   },
   "dependencies": {
+    "@cyriacbr/react-split-text": "^1.0.0",
     "@ghostery/adblocker-electron": "^2.5.2",
-    "cross-fetch": "^4.1.0"
+    "cross-fetch": "^4.1.0",
+    "framer-motion": "^12.16.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "electron": "^35.2.0",
@@ -24,8 +28,11 @@
     "productName": "YouTubeApp",
     "files": [
       "index.html",
+      "splash.html",
       "main.js",
       "preload.js",
+      "adblocker.js",
+      "scripts/**/*",
       "assets/**/*",
       "node_modules/@ghostery/adblocker-electron/**/*"
     ],
