@@ -3,7 +3,9 @@
 ![Logo](assets/YouTube.svg)
 
 > 🧱 **v1.5.0**: Just your normal YouTube… with adblock perfected! 🔥
+
 > 🎭 **v2.0.0**: Same YouTube app — now with some animations no one asked for 😅 *(still in beta, no guarantee of future updates)*
+
 > 📌 **Note**: I don’t follow semantic versioning. Versions are named progressively however I feel like. Simple as that.
 
 A lightweight YouTube desktop client built with Electron, enhanced with powerful ad blocking and performance tweaks for a distraction-free viewing experience.
