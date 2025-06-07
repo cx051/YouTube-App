@@ -8,6 +8,8 @@
 
 > 📌 **Note**: I don’t follow semantic versioning. Versions are named progressively however I feel like. Simple as that.
 
+> ⚠️ Warning: The current files in this GitHub repo are a mix of different versions. If you clone this repo directly, there’s no guarantee it will build or work properly.
+
 A lightweight YouTube desktop client built with Electron, enhanced with powerful ad blocking and performance tweaks for a distraction-free viewing experience.
 
 ![App Screenshot](assets/screenshot.png)
