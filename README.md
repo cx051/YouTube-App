@@ -1,8 +1,12 @@
 # YouTubeApp
 
-   ![Logo](assets/YouTube.svg)
+![Logo](assets/YouTube.svg)
 
-A lightweight YouTube desktop client built with Electron, enhanced with the Ghostery ad blocker and performance tweaks for a distraction-free viewing experience.
+> 🧱 **v1.5.0**: Just your normal YouTube… with adblock perfected! 🔥
+> 🎭 **v2.0.0**: Same YouTube app — now with some animations no one asked for 😅 *(still in beta, no guarantee of future updates)*
+> 📌 **Note**: I don’t follow semantic versioning. Versions are named progressively however I feel like. Simple as that.
+
+A lightweight YouTube desktop client built with Electron, enhanced with powerful ad blocking and performance tweaks for a distraction-free viewing experience.
 
 ![App Screenshot](assets/screenshot.png)
 
@@ -12,48 +16,52 @@ A lightweight YouTube desktop client built with Electron, enhanced with the Ghos
 
 ## ✨ Features
 
-- 🧭 Clean, minimal UI with custom window controls  
-- ⚡ Ghostery ad blocking  
-- 🚀 Performance-optimized loading  
-- 🧹 One-click browsing data cleanup  
-- 🎯 Zoom in/out support  
-- 🔒 Privacy-focused
+* 🧭 Clean, minimal UI with custom window controls
+* ⚡ Ghostery & uBlock Origin ad blocking
+* 🚀 Performance-optimized loading
+* 🧹 One-click browsing data cleanup
+* 🎯 Zoom in/out support
+* 🔒 Privacy-focused
 
 ---
 
 ## 🧰 Tech Stack
 
-- [Electron](https://www.electronjs.org/)  
-- [Ghostery Adblocker for Electron](https://github.com/ghostery/adblocker)  
-- Vanilla JavaScript, HTML, and CSS
+* [Electron](https://www.electronjs.org/)
+* [Ghostery Adblocker for Electron](https://github.com/ghostery/adblocker)
+* [uBlock Origin filter integration](https://github.com/gorhill/uBlock)
+* Vanilla JavaScript, HTML, and CSS
 
 ---
 
-## 📦 Packaging
-
-To build the `.deb` package for Ubuntu Linux:
-
-npm install
-
-npm run dist
-
-Once built, the .deb file will be available in the dist/ directory.
-
 ## 🛠️ Installation
-To install the .deb file on Ubuntu:
 
+To install the `.deb` file on Ubuntu:
+
+```bash
 sudo dpkg -i youtube*.deb
+```
 
 ✅ This app has only been tested on Ubuntu LTS (22.04+)
 
+---
+
 ## 📁 Download
-Download the latest .deb release from the Releases page.
+
+Download the latest `.deb` release from the [Releases](../../releases) page.
+
+---
 
 ## 👤 Author
+
 Made with ❤️ by cx051
 
 No email or other metadata is included for privacy reasons.
 
+---
+
 ## 🛡️ License
+
 This project is licensed under the [ISC License](LICENSE).
 
+---
