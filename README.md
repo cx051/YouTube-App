@@ -1,5 +1,16 @@
 # YouTubeApp
 
+## ⚠️ Project Archived
+
+This project is now **archived** and no longer maintained due to time constraints.
+
+**CRITICAL SECURITY WARNING:** This application is affected by **CVE-2025-64756** and is NOT patched. 
+
+If you still choose to use this application, **DO NOT log in to your Google account** as it poses a "possible" security risk.
+
+Consider using official YouTube clients or actively maintained alternatives instead.
+
+
 ![Logo](assets/YouTube.svg)
 
 > 🧱 **v1.5.0**: Just your normal YouTube… with adblock perfected! 🔥
