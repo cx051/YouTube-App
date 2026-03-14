@@ -4,9 +4,8 @@
 
 This project is now **archived** and no longer maintained due to time constraints.
 
-**CRITICAL SECURITY WARNING:** This application is affected by **CVE-2025-64756** and is NOT patched. 
-
-If you still choose to use this application, **DO NOT log in to your Google account** as it poses a "possible" security risk.
+> [!IMPORTANT]
+> Dependency vulnerabilities, including **CVE-2025-64756**, have been patched in the latest version. However, the project remains archived.
 
 Consider using official YouTube clients or actively maintained alternatives instead.
 
