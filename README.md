@@ -1,15 +1,5 @@
 # YouTubeApp
 
-## ⚠️ Project Archived
-
-This project is now **archived** and no longer maintained due to time constraints.
-
-> [!IMPORTANT]
-> Dependency vulnerabilities, including **CVE-2025-64756**, have been patched in the latest version. However, the project remains archived.
-
-Consider using official YouTube clients or actively maintained alternatives instead.
-
-
 ![Logo](assets/YouTube.svg)
 
 > 🧱 **v1.5.0**: Just your normal YouTube… with adblock perfected! 🔥
