@@ -5,12 +5,8 @@ const fetch = require('cross-fetch');
 const AD_FILTER_LISTS = [
   'https://easylist.to/easylist/easylist.txt',
   'https://easylist.to/easylist/easyprivacy.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances.txt',
-  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances-youtube.txt',
+  'https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/English/sections/youtube.txt',
 ];
 
 async function setupAdblocker(session, options = {}) {

@@ -412,7 +412,6 @@
       <button class="toolbar-button" id="back-btn"><span class="icon">⮜</span></button>
       <button class="toolbar-button" id="forward-btn"><span class="icon">⮞</span></button>
       <button class="toolbar-button" id="reload-btn"><span class="icon reload-icon">⟳</span></button>
-      <button class="toolbar-button" id="tray-btn">▼</button>
     </div>
     <div class="toolbar-group window-controls">
       <div class="dropdown">
@@ -426,7 +425,6 @@
       <input type="checkbox" id="hwaccel-toggle" style="margin-left:8px;vertical-align:middle;" />
     </button>
     <button id="toggle-sound-btn">Sound Effects: <span id="sound-effect-status">On</span></button>
-    <button id="toggle-skip-intro">Skip Intro: <span id="skip-intro-status">Off</span></button>
   </div>
 </div>
       <button class="toolbar-button" id="minimize-btn"></button>
@@ -494,21 +492,8 @@
         }
       });
 
-      // Settings and Sound effect toggle
+      // Sound effect toggle
       let soundEffectsEnabled = true; // UI sounds ON by default
-      let skipIntroEnabled = false;
-      electronAPI.getSettings().then(settings => {
-        if (settings) {
-          soundEffectsEnabled = settings.soundEffects;
-          const soundStatusEl = document.getElementById('sound-effect-status');
-          if (soundStatusEl) soundStatusEl.textContent = soundEffectsEnabled ? 'On' : 'Off';
-
-          skipIntroEnabled = settings.skipIntro;
-          const introStatusEl = document.getElementById('skip-intro-status');
-          if (introStatusEl) introStatusEl.textContent = skipIntroEnabled ? 'On' : 'Off';
-        }
-      });
-
       function playSound(id) {
         if (!soundEffectsEnabled) return;
         const audio = document.getElementById(id);
@@ -520,11 +505,9 @@
       document.getElementById('back-btn').addEventListener('click', () => playSound('ui-pop-audio'));
       document.getElementById('forward-btn').addEventListener('click', () => playSound('ui-pop-audio'));
       document.getElementById('reload-btn').addEventListener('click', () => playSound('ui-pop-audio'));
-      const trayBtn = document.getElementById('tray-btn');
       const minBtn = document.getElementById('minimize-btn');
       const maxBtn = document.getElementById('maximize-btn');
       const closeBtn = document.getElementById('close-btn');
-      if (trayBtn) trayBtn.addEventListener('click', () => playSound('ui-pop-audio'));
       if (minBtn) minBtn.addEventListener('click', () => playSound('ui-pop-audio'));
       if (maxBtn) maxBtn.addEventListener('click', () => playSound('ui-pop-audio'));
       if (closeBtn) closeBtn.addEventListener('click', () => playSound('ui-pop-audio'));
@@ -561,15 +544,7 @@
         if (t.id === 'toggle-sound-btn') {
           soundEffectsEnabled = !soundEffectsEnabled;
           document.getElementById('sound-effect-status').textContent = soundEffectsEnabled ? 'On' : 'Off';
-          electronAPI.updateSetting('soundEffects', soundEffectsEnabled);
           showToast(`Sound Effects ${soundEffectsEnabled ? 'Enabled' : 'Disabled'}`);
-        }
-        if (t.id === 'toggle-skip-intro') {
-          skipIntroEnabled = !skipIntroEnabled;
-          const statusEl = document.getElementById('skip-intro-status');
-          if (statusEl) statusEl.textContent = skipIntroEnabled ? 'On' : 'Off';
-          electronAPI.updateSetting('skipIntro', skipIntroEnabled);
-          showToast(`Skip Intro ${skipIntroEnabled ? 'Enabled' : 'Disabled'}`);
         }
       });
 
@@ -625,11 +600,9 @@
 
       // Always re-attach window control listeners for reliability, including after dropdown renders
       function attachWindowControls() {
-        const trayBtn = document.getElementById('tray-btn');
         const minBtn = document.getElementById('minimize-btn');
         const maxBtn = document.getElementById('maximize-btn');
         const closeBtn = document.getElementById('close-btn');
-        if (trayBtn) trayBtn.onclick = () => electronAPI.minimizeToTray();
         if (minBtn) minBtn.onclick = () => electronAPI.minimizeWindow();
         if (maxBtn) maxBtn.onclick = () => electronAPI.toggleMaximize();
         if (closeBtn) closeBtn.onclick = () => electronAPI.closeWindow();
