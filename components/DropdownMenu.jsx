@@ -6,7 +6,6 @@ const menuItems = [
   { icon: '🔍−', label: 'Zoom Out', id: 'zoom-out-btn' },
   { icon: '🗑️', label: 'Clear Data', id: 'clear-data-btn' },
   { icon: '⚡', label: 'Toggle Hardware Acceleration', id: 'toggle-hwaccel' },
-  { icon: '⏩', label: 'Skip Intro', id: 'toggle-skip-intro' },
 ];
 
 export default function DropdownMenu({ open, onClose, onAction, hwAccelEnabled }) {
