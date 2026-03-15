@@ -1,7 +1,7 @@
-const { app, BrowserWindow, session, ipcMain } = require('electron');
-
+const { app, BrowserWindow, session, ipcMain, Tray, Menu } = require('electron');
 const path = require('path');
 const { setupAdblocker } = require('./adblocker');
+const settingsManager = require('./settings-manager');
 
 // Handle unhandled promise rejections globally
 process.on('unhandledRejection', (reason, promise) => {
@@ -17,16 +17,145 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
-// Disable hardware acceleration by default
-app.commandLine.appendSwitch('disable-gpu');
+
+// Load settings and apply hardware acceleration
+const settings = settingsManager.getSettings();
+if (!settings.hardwareAcceleration) {
+  app.commandLine.appendSwitch('disable-gpu');
+}
 
 let mainWindow;
+let tray;
 let splashWindow;
 const ZOOM_LIMITS = { MIN: -3, MAX: 3 };
 let currentZoomLevel = 0;
 
+function createTray() {
+  if (tray) return;
+  const iconPath = process.platform === 'win32'
+    ? path.join(__dirname, 'assets', 'YouTube.ico')
+    : path.join(__dirname, 'assets', 'YouTube (original).png');
+
+  tray = new Tray(iconPath);
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Show App', click: () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      }
+    },
+    { type: 'separator' },
+    { label: 'Quit', click: () => {
+      app.isQuitting = true;
+      app.quit();
+    } }
+  ]);
+
+  tray.setToolTip('YouTube App');
+  tray.setContextMenu(contextMenu);
+  tray.on('click', () => {
+    if (mainWindow) {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    }
+  });
+}
+
+function configureWindow(win) {
+  // Inject script to auto-select highest YouTube quality after navigation
+  win.webContents.on('did-navigate', () => {
+    win.webContents.executeJavaScript(`
+      (function selectBestQuality(){
+        if (!/youtube\\.com\\/watch/.test(location.href)) return;
+        let menu = document.querySelector('.ytp-settings-button');
+        if (menu) menu.click();
+        setTimeout(()=>{
+          let qualityBtn = Array.from(document.querySelectorAll('.ytp-menuitem')).find(el=>el.textContent.includes('Quality'));
+          if (qualityBtn) qualityBtn.click();
+          setTimeout(()=>{
+            let best = document.querySelectorAll('.ytp-quality-menu .ytp-menuitem')[0];
+            if (best) best.click();
+            if (menu) menu.click();
+          }, 400);
+        }, 400);
+      })();
+    `);
+  });
+
+  win.on('closed', () => {
+    mainWindow = null;
+  });
+
+  win.on('close', (event) => {
+    if (!app.isQuitting) {
+      event.preventDefault();
+      win.hide();
+    }
+    return false;
+  });
+
+  createTray();
+}
+
+async function createMainWindow(showImmediately = true) {
+  const preloadPath = path.join(__dirname, 'preload.js');
+  const iconPath = process.platform === 'win32'
+    ? path.join(__dirname, 'assets', 'YouTube.ico')
+    : path.join(__dirname, 'assets', 'YouTube (original).png');
+
+  mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 768,
+    autoHideMenuBar: true,
+    frame: false,
+    show: showImmediately,
+    opacity: showImmediately ? 1 : 0,
+    icon: iconPath,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      preload: preloadPath,
+      webviewTag: true,
+      enableWebSQL: false,
+      webSecurity: true,
+      scrollBounce: false,
+      offscreen: false,
+      backgroundThrottling: true,
+      experimentalFeatures: true,
+      enableBlinkFeatures: 'HardwareMediaKeyHandling,VideoPlaybackQuality',
+    },
+  });
+
+  // Reduce memory/cpu usage with Electron flags
+  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=128');
+  app.commandLine.appendSwitch('disable-software-rasterizer');
+  app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
+
+  // Start adblocker setup
+  setupAdblocker(session.defaultSession).catch(console.error);
+
+  mainWindow.loadFile('index.html').catch(err => {
+    console.error('Failed to load index.html:', err);
+  });
+
+  configureWindow(mainWindow);
+}
+
 async function createWindow() {
   try {
+    const settings = settingsManager.getSettings();
+
+    if (settings.skipIntro) {
+      createMainWindow(true);
+      return;
+    }
+
     // 1. Create splash window IMMEDIATELY
     splashWindow = new BrowserWindow({
       width: 440,
@@ -49,89 +178,11 @@ async function createWindow() {
 
     // 2. Delay heavy logic until splash is visible
     splashWindow.once('ready-to-show', async () => {
-      // Record splash show time
-      const splashShownAt = Date.now();
       let mainLoaded = false;
       let splashMinTimeReached = false;
       let splashClosed = false;
-      let adblockerReady = false;
-      let adblockerTimeout;
-      // Start adblocker setup but do not block UI
-      const adblockerPromise = setupAdblocker(session.defaultSession).then(() => { adblockerReady = true; });
-      // If adblocker takes >2.5s, show loading message on splash (optional)
-      adblockerTimeout = setTimeout(() => {
-        if (!adblockerReady && splashWindow && !splashClosed) {
-          splashWindow.webContents.executeJavaScript(`
-            let msg = document.getElementById('adblocker-loading-msg');
-            if (!msg) {
-              msg = document.createElement('div');
-              msg.id = 'adblocker-loading-msg';
-              msg.style = 'color:#ff2222;font-size:15px;text-align:center;margin-top:18px;opacity:0.92;font-family:monospace;';
-              msg.textContent = 'Loading adblocker…';
-              document.querySelector('.splash-container').appendChild(msg);
-            }
-          `);
-        }
-      }, 2500);
-      // Do not block main window creation/loading
-      const preloadPath = path.join(__dirname, 'preload.js');
-      const iconPath = process.platform === 'win32'
-        ? path.join(__dirname, 'assets', 'YouTube.ico')
-        : path.join(__dirname, 'assets', 'YouTube (original).png');
 
-      mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 768,
-        autoHideMenuBar: true,
-        frame: false,
-        show: false, // hidden initially
-        opacity: 0, // for fade-in
-        icon: iconPath,
-        webPreferences: {
-          nodeIntegration: false,
-          contextIsolation: true,
-          sandbox: true,
-          preload: preloadPath,
-          webviewTag: true,
-          enableWebSQL: false,
-          webSecurity: true,
-          scrollBounce: false,
-          offscreen: false,
-          backgroundThrottling: true, // allow throttling for background tabs
-          experimentalFeatures: true,
-          enableBlinkFeatures: 'HardwareMediaKeyHandling,VideoPlaybackQuality',
-          // Hardware acceleration will be toggled via IPC
-        },
-      });
-
-      // Reduce memory/cpu usage with Electron flags
-      app.commandLine.appendSwitch('js-flags', '--max-old-space-size=128');
-      app.commandLine.appendSwitch('disable-software-rasterizer');
-      app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
-
-      // Inject script to auto-select highest YouTube quality after navigation
-      mainWindow.webContents.on('did-navigate', () => {
-        mainWindow.webContents.executeJavaScript(`
-          (function selectBestQuality(){
-            if (!/youtube\.com\/watch/.test(location.href)) return;
-            let menu = document.querySelector('.ytp-settings-button');
-            if (menu) menu.click();
-            setTimeout(()=>{
-              let qualityBtn = Array.from(document.querySelectorAll('.ytp-menuitem')).find(el=>el.textContent.includes('Quality'));
-              if (qualityBtn) qualityBtn.click();
-              setTimeout(()=>{
-                let best = document.querySelectorAll('.ytp-quality-menu .ytp-menuitem')[0];
-                if (best) best.click();
-                if (menu) menu.click();
-              }, 400);
-            }, 400);
-          })();
-        `);
-      });
-
-      mainWindow.loadFile('index.html').catch(err => {
-        console.error('Failed to load index.html:', err);
-      });
+      createMainWindow(false);
 
       function tryCloseSplash() {
         if (mainLoaded && splashMinTimeReached && !splashClosed) {
@@ -167,38 +218,45 @@ async function createWindow() {
         splashMinTimeReached = true;
         tryCloseSplash();
       }, 3000);
-
-      mainWindow.on('closed', () => {
-        mainWindow = null;
-      });
     });
   } catch (err) {
     console.error('Error creating window:', err);
   }
 }
 
+// Settings IPC
+ipcMain.handle('get-settings', () => {
+  try {
+    return settingsManager.getSettings();
+  } catch (error) {
+    console.error('IPC get-settings error:', error);
+    return {};
+  }
+});
+
+ipcMain.handle('update-setting', (_event, key, value) => {
+  try {
+    settingsManager.updateSetting(key, value);
+    return { success: true };
+  } catch (error) {
+    console.error('IPC update-setting error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Hardware acceleration IPC
 ipcMain.handle('get-hardware-acceleration', () => {
-  return !app.commandLine.hasSwitch('disable-gpu');
+  return settingsManager.getSettings().hardwareAcceleration;
 });
+
 ipcMain.handle('set-hardware-acceleration', async (_event, enabled) => {
-  if (enabled) {
-    // Remove the disable-gpu switch if present
-    if (app.commandLine.hasSwitch('disable-gpu')) {
-      // This only takes effect on restart
-      // No direct way to enable at runtime in Electron
-      // Inform renderer to prompt for restart
-      return { restartRequired: true, enabled: true };
-    }
-    return { restartRequired: false, enabled: true };
-  } else {
-    // Add the disable-gpu switch (takes effect on restart)
-    if (!app.commandLine.hasSwitch('disable-gpu')) {
-      app.commandLine.appendSwitch('disable-gpu');
-      return { restartRequired: true, enabled: false };
-    }
-    return { restartRequired: false, enabled: false };
+  const currentSettings = settingsManager.getSettings();
+  if (currentSettings.hardwareAcceleration === enabled) {
+    return { restartRequired: false, enabled };
   }
+
+  settingsManager.updateSetting('hardwareAcceleration', enabled);
+  return { restartRequired: true, enabled };
 });
 
 // IPC handler for app restart (hardware acceleration modal)
@@ -208,30 +266,49 @@ ipcMain.handle('restart-app', () => {
 });
 
 // Navigation
-ipcMain.on('toolbar-go-back', () => mainWindow?.webContents.goBack());
-ipcMain.on('toolbar-go-forward', () => mainWindow?.webContents.goForward());
-ipcMain.on('toolbar-reload', () => mainWindow?.webContents.reload());
+ipcMain.on('toolbar-go-back', () => {
+  try { mainWindow?.webContents.goBack(); } catch (e) { console.error(e); }
+});
+ipcMain.on('toolbar-go-forward', () => {
+  try { mainWindow?.webContents.goForward(); } catch (e) { console.error(e); }
+});
+ipcMain.on('toolbar-reload', () => {
+  try { mainWindow?.webContents.reload(); } catch (e) { console.error(e); }
+});
 
 // Window controls
-ipcMain.on('minimize-window', () => mainWindow?.minimize());
-ipcMain.on('toggle-maximize', () => {
-  if (!mainWindow) return;
-  mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+ipcMain.on('minimize-window', () => {
+  try { mainWindow?.minimize(); } catch (e) { console.error(e); }
 });
-ipcMain.on('close-window', () => mainWindow?.close());
+ipcMain.on('minimize-to-tray', () => {
+  try { mainWindow?.hide(); } catch (e) { console.error(e); }
+});
+ipcMain.on('toggle-maximize', () => {
+  try {
+    if (!mainWindow) return;
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+  } catch (e) { console.error(e); }
+});
+ipcMain.on('close-window', () => {
+  try { mainWindow?.close(); } catch (e) { console.error(e); }
+});
 
 // Zoom
 ipcMain.on('zoom-in', () => {
-  if (mainWindow && currentZoomLevel < ZOOM_LIMITS.MAX) {
-    currentZoomLevel += 0.5;
-    mainWindow.webContents.setZoomLevel(currentZoomLevel);
-  }
+  try {
+    if (mainWindow && currentZoomLevel < ZOOM_LIMITS.MAX) {
+      currentZoomLevel += 0.5;
+      mainWindow.webContents.setZoomLevel(currentZoomLevel);
+    }
+  } catch (e) { console.error(e); }
 });
 ipcMain.on('zoom-out', () => {
-  if (mainWindow && currentZoomLevel > ZOOM_LIMITS.MIN) {
-    currentZoomLevel -= 0.5;
-    mainWindow.webContents.setZoomLevel(currentZoomLevel);
-  }
+  try {
+    if (mainWindow && currentZoomLevel > ZOOM_LIMITS.MIN) {
+      currentZoomLevel -= 0.5;
+      mainWindow.webContents.setZoomLevel(currentZoomLevel);
+    }
+  } catch (e) { console.error(e); }
 });
 
 // Clear browsing data
@@ -244,7 +321,9 @@ ipcMain.on('clear-browsing-data', async () => {
     mainWindow.webContents.reload();
   } catch (error) {
     console.error('Failed to clear browsing data:', error);
-    mainWindow.webContents.send('clear-data-result', { success: false });
+    try {
+      mainWindow.webContents.send('clear-data-result', { success: false });
+    } catch (e) { console.error(e); }
   }
 });
 
