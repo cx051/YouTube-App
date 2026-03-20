@@ -2,56 +2,70 @@ const { ElectronBlocker } = require('@ghostery/adblocker-electron');
 const fetch = require('cross-fetch');
 const fs = require('fs');
 const path = require('path');
-const { app } = require('electron');
+const { app, ipcMain } = require('electron');
 
-// Cache file path in the user's data directory
+// Aggressive public YouTube adblock filter lists
+const AD_FILTER_LISTS = [
+  'https://easylist.to/easylist/easylist.txt',
+  'https://easylist.to/easylist/easyprivacy.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt',
+];
+
 const CACHE_PATH = path.join(app.getPath('userData'), 'adblock-engine.bin');
+
+// Track the current blocker instance to avoid IPC conflicts
+let currentBlocker = null;
 
 /**
  * Sets up the Ghostery adblocker for the given Electron session.
- * Uses a prebuilt engine for ads and tracking and caches it for fast startup.
+ * Uses aggressive filter lists and caches them for fast startup.
  */
 async function setupAdblocker(session) {
   try {
-    // Built-in caching configuration for the adblocker
-    const caching = {
-      path: CACHE_PATH,
-      read: async (p) => {
-        try {
-          return await fs.promises.readFile(p);
-        } catch (e) {
-          return null; // Return null if file doesn't exist to trigger fetch
-        }
-      },
-      write: async (p, buf) => {
-        try {
-          await fs.promises.writeFile(p, buf);
-        } catch (e) {
-          console.error('Failed to write adblocker cache:', e);
-        }
-      },
-    };
+    // We already have a blocker running, no need to re-initialize
+    if (currentBlocker) {
+      console.log('Adblocker: Already initialized.');
+      return currentBlocker;
+    }
 
-    // Load the blocker. If cache exists, it uses it. If not, it fetches from CDN and saves to cache.
-    // We use fromPrebuiltAdsAndTracking as requested for standard browser-like blocking.
-    const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch, caching);
+    // Explicitly unregister any existing handlers before starting to avoid "Attempted to register a second handler" error
+    // These are the names used by @ghostery/adblocker-electron
+    ipcMain.removeHandler('@ghostery/adblocker/inject-cosmetic-filters');
+    ipcMain.removeHandler('@ghostery/adblocker/is-mutation-observer-enabled');
 
-    // Enable blocking in the session.
-    // This handles network blocking and automatic injection of cosmetic filters.
-    // We no longer whitelist YouTube to ensure ads are actually blocked there.
+    let blocker;
+    // We try to load from cache for speed
+    if (fs.existsSync(CACHE_PATH)) {
+      console.log('Adblocker: Loading from cache...');
+      const buffer = await fs.promises.readFile(CACHE_PATH);
+      blocker = ElectronBlocker.deserialize(buffer);
+    } else {
+      console.log('Adblocker: Loading from lists (first time)...');
+      blocker = await ElectronBlocker.fromLists(fetch, AD_FILTER_LISTS);
+      const buffer = Buffer.from(blocker.serialize());
+      await fs.promises.writeFile(CACHE_PATH, buffer);
+      console.log('Adblocker: Engine cached.');
+    }
+
     blocker.enableBlockingInSession(session);
-
-    console.log('Adblocker successfully enabled (cached version used if available).');
+    currentBlocker = blocker;
+    console.log('Adblocker successfully enabled with aggressive lists.');
     return blocker;
   } catch (error) {
-    console.error('Failed to setup adblocker:', error);
-    // Silent fallback to standard lists if prebuilt fails
+    console.error('Adblocker: Failed to setup:', error);
+    // Fallback if anything goes wrong
     try {
       const fallbackBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
       fallbackBlocker.enableBlockingInSession(session);
+      currentBlocker = fallbackBlocker;
       return fallbackBlocker;
     } catch (fallbackError) {
-      console.error('Adblocker fallback failed:', fallbackError);
+      console.error('Adblocker: Fallback failed:', fallbackError);
     }
   }
 }

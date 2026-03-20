@@ -67,25 +67,8 @@ function createTray() {
 }
 
 function configureWindow(win) {
-  // Inject script to auto-select highest YouTube quality after navigation
-  win.webContents.on('did-navigate', () => {
-    win.webContents.executeJavaScript(`
-      (function selectBestQuality(){
-        if (!/youtube\\.com\\/watch/.test(location.href)) return;
-        let menu = document.querySelector('.ytp-settings-button');
-        if (menu) menu.click();
-        setTimeout(()=>{
-          let qualityBtn = Array.from(document.querySelectorAll('.ytp-menuitem')).find(el=>el.textContent.includes('Quality'));
-          if (qualityBtn) qualityBtn.click();
-          setTimeout(()=>{
-            let best = document.querySelectorAll('.ytp-quality-menu .ytp-menuitem')[0];
-            if (best) best.click();
-            if (menu) menu.click();
-          }, 400);
-        }, 400);
-      })();
-    `);
-  });
+  // Quality selector script moved to custom-adblock.js to ensure it runs inside the webview's content context
+  // and doesn't clutter main.js or cause IPC overhead.
 
   win.on('closed', () => {
     mainWindow = null;
@@ -190,7 +173,7 @@ async function createWindow() {
         if (mainLoaded && splashMinTimeReached && !splashClosed) {
           splashClosed = true;
           if (splashWindow && !splashWindow.isDestroyed()) {
-            splashWindow.webContents.executeJavaScript('window.electronSplashClose && window.electronSplashClose();');
+            splashWindow.webContents.executeJavaScript('window.electronSplashClose && window.electronSplashClose();').catch(() => {});
           }
           setTimeout(() => {
             if (mainWindow) {

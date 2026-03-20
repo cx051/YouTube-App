@@ -478,8 +478,12 @@
         if (!/youtube\.com/.test(url)) return;
         // Fetch and inject script asynchronously, non-blocking
         fetch('scripts/custom-adblock.js')
-          .then(res => res.text())
-          .then(script => webview.executeJavaScript(script, false));
+          .then(res => {
+            if (!res.ok) throw new Error('Adblock script failed to load');
+            return res.text();
+          })
+          .then(script => webview.executeJavaScript(script, false))
+          .catch(err => console.error('Failed to inject custom adblock:', err));
       } // End custom adblock injection
 
 
@@ -536,16 +540,20 @@
         const t = e.target.closest('button');
         if (!t || !t.id) return;
         if (t.id === 'zoom-in-btn') {
-          const level = await webview.getZoomLevel();
-          const newLevel = level + 0.5;
-          webview.setZoomLevel(newLevel);
-          showToast(`Zoomed in to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+          try {
+            const level = await webview.getZoomLevel();
+            const newLevel = level + 0.5;
+            webview.setZoomLevel(newLevel);
+            showToast(`Zoomed in to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+          } catch (e) { console.error('Zoom In failed:', e); }
         }
         if (t.id === 'zoom-out-btn') {
-          const level = await webview.getZoomLevel();
-          const newLevel = level - 0.5;
-          webview.setZoomLevel(newLevel);
-          showToast(`Zoomed out to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+          try {
+            const level = await webview.getZoomLevel();
+            const newLevel = level - 0.5;
+            webview.setZoomLevel(newLevel);
+            showToast(`Zoomed out to ${Math.round((1 + newLevel * 0.2) * 100)}%`, 'success');
+          } catch (e) { console.error('Zoom Out failed:', e); }
         }
         if (t.id === 'clear-data-btn') {
           showToast('Clearing data…', 'neutral');
@@ -694,7 +702,6 @@
       });
     });
   </script>
-<script type="module" src="scripts/splash-entry.js"></script>
 <script>
   // When the main app is loaded, dispatch the event to remove splash
   window.addEventListener('DOMContentLoaded', () => {
