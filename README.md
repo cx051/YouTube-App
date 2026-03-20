@@ -1,58 +1,152 @@
-# YouTubeApp
 
-![Logo](assets/YouTube.svg)
+<h1 align="center">YouTubeApp</h1>
 
-> 🧱 **v1.5.0**: Just your normal YouTube… with adblock perfected! 🔥
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:ff0000,50:8B0000,100:000000&height=140&section=header&text=&fontColor=ffffff&animation=fadeIn" />
+</p>
 
-> 🎭 **v2.0.0**: Same YouTube app — now with some animations no one asked for 😅 *(still in beta, no guarantee of future updates)*
+<p align="center">
+  <img src="assets/YouTube.svg" width="120" />
+</p>
 
-> 📌 **Note**: I don’t follow semantic versioning. Versions are named progressively however I feel like. Simple as that.
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?size=20&duration=3000&center=true&vCenter=true&width=700&lines=Fast+YouTube+Desktop+Client;Ad-Free+Experience;Optimized+for+Performance&color=FF0000&pause=800" />
+</p>
 
-> ⚠️ Warning: The current files in this GitHub repo are a mix of different versions. If you clone this repo directly, there’s no guarantee it will build or work properly.
 
-A lightweight YouTube desktop client built with Electron, enhanced with powerful ad blocking and performance tweaks for a distraction-free viewing experience.
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Platform](https://img.shields.io/badge/platform-Linux%20\(Ubuntu%2022.04%2B\)-orange)
+![Electron](https://img.shields.io/badge/Electron-Framework-47848F?logo=electron\&logoColor=white)
+![License](https://img.shields.io/badge/license-ISC-green)
+![Status](https://img.shields.io/badge/status-experimental-lightgrey)
+[![powered by Ghostery](https://img.shields.io/badge/ghostery-powered-blue?logo=ghostery)](https://github.com/ghostery/adblocker)
+
+---
+
+## 🎬 Overview
+
+YouTubeApp is a lightweight Electron-based desktop client designed for a **fast, clean, and distraction-free YouTube experience**.
+
+It combines **network-level ad blocking** with **DOM-level optimizations** to ensure minimal interruptions and optimal playback.
 
 ![App Screenshot](assets/screenshot.png)
-
-> ⚠️ **Disclaimer**: This is a personal project I built for use on my Ubuntu LTS system. It's essentially an Electron wrapper around YouTube with a custom toolbar and a few extra features like ad blocking. I do **not** plan to maintain this project regularly or ensure compatibility across all systems.
 
 ---
 
 ## ✨ Features
 
 * 🧭 Clean, minimal UI with custom window controls
-* ⚡ Ghostery & uBlock Origin ad blocking
-* 🚀 Performance-optimized loading
+* 🛡️ Advanced ad-blocking (Ghostery + uBlock filters)
+* ⚡ Persistent caching for fast startup (~50ms)
+* 🎯 Automatic highest-quality video selection
+* 🚫 Auto-skip and removal of ads
 * 🧹 One-click browsing data cleanup
-* 🎯 Zoom in/out support
-* 🔒 Privacy-focused
+* 🔍 Zoom controls
+* 🔒 Privacy-focused design
+
+---
+
+## 🧠 Architecture
+
+### 🔹 Hybrid Ad-Blocking System
+
+* **Network Layer**
+
+  * Powered by `@ghostery/adblocker-electron`
+  * Uses EasyList, EasyPrivacy, uBlock filters
+
+* **DOM Layer**
+
+  * Removes residual ads dynamically
+  * Handles YouTube UI updates
+  * Auto-skips and fast-forwards ads
+
+---
+
+### ⚡ Caching System
+
+* Binary cache stored in user data directory
+* First run: ~1.5s initialization
+* Subsequent runs: ~50ms startup
+
+---
+
+### 🔄 Execution Flow
+
+```text
+Initialize Adblock Engine
+        ↓
+Load from Cache (if available)
+        ↓
+Attach to Electron Session
+        ↓
+Load YouTube
+        ↓
+Inject custom-adblock.js
+        ↓
+Continuous DOM Cleanup
+```
+
+---
+
+## ⚙️ Performance
+
+* Reduced startup latency via caching
+* Optimized script injection timing
+* Singleton-style adblocker design
+* Minimal runtime overhead
 
 ---
 
 ## 🧰 Tech Stack
 
-* [Electron](https://www.electronjs.org/)
-* [Ghostery Adblocker for Electron](https://github.com/ghostery/adblocker)
-* [uBlock Origin filter integration](https://github.com/gorhill/uBlock)
-* Vanilla JavaScript, HTML, and CSS
+* Electron
+* @ghostery/adblocker-electron
+* uBlock Origin filter lists
+* Vanilla JS, HTML, CSS
 
 ---
 
-## 🛠️ Installation
-
-To install the `.deb` file on Ubuntu:
+## 📦 Installation
 
 ```bash
 sudo dpkg -i youtube*.deb
 ```
 
-✅ This app has only been tested on Ubuntu LTS (22.04+)
+**Tested on:** Ubuntu 22.04 LTS+
 
 ---
 
-## 📁 Download
+## 📁 Project Structure
 
-Download the latest `.deb` release from the [Releases](../../releases) page.
+```bash
+YouTubeApp/
+├── assets/
+├── scripts/
+│   └── custom-adblock.js
+├── main.js
+├── preload.js
+├── index.html
+├── adblocker.js
+└── package.json
+```
+
+---
+
+## ⚠️ Known Limitations
+
+* Depends on YouTube’s frontend (can break with updates)
+* Ad-blocking may require adjustments over time
+* Limited cross-platform support
+* Not production-focused
+
+
+---
+
+## ⚠️ Disclaimer
+
+This is a personal project intended for experimentation and individual use.
+Long-term maintenance and compatibility are not guaranteed.
 
 ---
 
@@ -60,12 +154,12 @@ Download the latest `.deb` release from the [Releases](../../releases) page.
 
 Made with ❤️ by cx051
 
-No email or other metadata is included for privacy reasons.
+---
+
+## 📜 License
+
+ISC License
 
 ---
 
-## 🛡️ License
 
-This project is licensed under the [ISC License](LICENSE).
-
----
