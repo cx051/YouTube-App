@@ -33,6 +33,9 @@ It combines **network-level ad blocking** with **DOM-level optimizations** to en
 
 ---
 
+**v2.0.0** is currently the most stable release.
+Ad-blocking functionality and overall performance are only guaranteed for this version and later. Versions prior to v2.0.0 may have inconsistent or degraded ad-blocking behavior and are not recommended for use.
+
 ## ✨ Features
 
 * 🧭 Clean, minimal UI with custom window controls
@@ -143,10 +146,11 @@ YouTubeApp/
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This is a personal project intended for experimentation and individual use.
 Long-term maintenance and compatibility are not guaranteed.
+This project is an independent application and is not affiliated with, endorsed by, or associated with Google LLC or any of its subsidiaries, including YouTube.
 
 ---
 
@@ -161,5 +165,4 @@ Made with ❤️ by cx051
 ISC License
 
 ---
-
 
