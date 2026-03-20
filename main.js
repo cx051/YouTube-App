@@ -137,8 +137,10 @@ async function createMainWindow(showImmediately = true) {
   app.commandLine.appendSwitch('disable-software-rasterizer');
   app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
 
-  // Start adblocker setup
-  setupAdblocker(session.defaultSession).catch(console.error);
+  // Start adblocker setup (now cached for faster startup)
+  setupAdblocker(session.defaultSession).catch(err => {
+    console.error('Adblocker setup failed:', err);
+  });
 
   mainWindow.loadFile('index.html').catch(err => {
     console.error('Failed to load index.html:', err);

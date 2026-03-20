@@ -477,7 +477,7 @@
         const url = webview.getURL();
         if (!/youtube\.com/.test(url)) return;
         // Fetch and inject script asynchronously, non-blocking
-        fetch('custom-adblock.js')
+        fetch('scripts/custom-adblock.js')
           .then(res => res.text())
           .then(script => webview.executeJavaScript(script, false));
       } // End custom adblock injection
@@ -694,7 +694,7 @@
       });
     });
   </script>
-<script type="module" src="splash-entry.js"></script>
+<script type="module" src="scripts/splash-entry.js"></script>
 <script>
   // When the main app is loaded, dispatch the event to remove splash
   window.addEventListener('DOMContentLoaded', () => {
