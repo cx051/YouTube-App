@@ -32,6 +32,7 @@
       "main.js",
       "preload.js",
       "adblocker.js",
+      "settings-manager.js",
       "scripts/**/*",
       "assets/**/*",
       "node_modules/@ghostery/adblocker-electron/**/*"
