@@ -14,9 +14,13 @@ const AD_FILTER_LISTS = [
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt',
+  'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/quick-fixes.txt',
+  'https://raw.githubusercontent.com/brave/adblock-lists/master/brave-unbreak.txt',
+  'https://raw.githubusercontent.com/brave/adblock-lists/master/brave-specific.txt',
 ];
 
 const CACHE_PATH = path.join(app.getPath('userData'), 'adblock-engine.bin');
+const LISTS_HASH_PATH = path.join(app.getPath('userData'), 'adblock-lists-hash.txt');
 
 // Track the current blocker instance to avoid IPC conflicts
 let currentBlocker = null;
@@ -39,16 +43,27 @@ async function setupAdblocker(session) {
     ipcMain.removeHandler('@ghostery/adblocker/is-mutation-observer-enabled');
 
     let blocker;
+    const currentHash = Buffer.from(AD_FILTER_LISTS.join(',')).toString('base64');
+    let cacheValid = false;
+
+    if (fs.existsSync(CACHE_PATH) && fs.existsSync(LISTS_HASH_PATH)) {
+      const savedHash = await fs.promises.readFile(LISTS_HASH_PATH, 'utf8');
+      if (savedHash === currentHash) {
+        cacheValid = true;
+      }
+    }
+
     // We try to load from cache for speed
-    if (fs.existsSync(CACHE_PATH)) {
+    if (cacheValid) {
       console.log('Adblocker: Loading from cache...');
       const buffer = await fs.promises.readFile(CACHE_PATH);
       blocker = ElectronBlocker.deserialize(buffer);
     } else {
-      console.log('Adblocker: Loading from lists (first time)...');
+      console.log('Adblocker: Loading from lists (first time or lists updated)...');
       blocker = await ElectronBlocker.fromLists(fetch, AD_FILTER_LISTS);
       const buffer = Buffer.from(blocker.serialize());
       await fs.promises.writeFile(CACHE_PATH, buffer);
+      await fs.promises.writeFile(LISTS_HASH_PATH, currentHash);
       console.log('Adblocker: Engine cached.');
     }
 

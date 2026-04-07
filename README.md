@@ -27,7 +27,7 @@
 
 YouTubeApp is a lightweight Electron-based desktop client designed for a **fast, clean, and distraction-free YouTube experience**.
 
-It combines **network-level ad blocking** with **DOM-level optimizations** to ensure minimal interruptions and optimal playback.
+It uses **comprehensive filter-list based ad blocking** to ensure minimal interruptions and optimal playback.
 
 ![App Screenshot](assets/screenshot.png)
 
@@ -39,10 +39,8 @@ Ad-blocking functionality and overall performance are only guaranteed for this v
 ## ✨ Features
 
 * 🧭 Clean, minimal UI with custom window controls
-* 🛡️ Advanced ad-blocking (Ghostery + uBlock filters)
+* 🛡️ Advanced ad-blocking (Ghostery, uBlock, and Brave filters)
 * ⚡ Persistent caching for fast startup (~50ms)
-* 🎯 Automatic highest-quality video selection
-* 🚫 Auto-skip and removal of ads
 * 🧹 One-click browsing data cleanup
 * 🔍 Zoom controls
 * 🔒 Privacy-focused design
@@ -51,18 +49,12 @@ Ad-blocking functionality and overall performance are only guaranteed for this v
 
 ## 🧠 Architecture
 
-### 🔹 Hybrid Ad-Blocking System
+### 🔹 Ad-Blocking System
 
-* **Network Layer**
+* **Filter Engine**
 
   * Powered by `@ghostery/adblocker-electron`
-  * Uses EasyList, EasyPrivacy, uBlock filters
-
-* **DOM Layer**
-
-  * Removes residual ads dynamically
-  * Handles YouTube UI updates
-  * Auto-skips and fast-forwards ads
+  * Uses EasyList, EasyPrivacy, uBlock, and Brave filters
 
 ---
 
@@ -84,10 +76,6 @@ Load from Cache (if available)
 Attach to Electron Session
         ↓
 Load YouTube
-        ↓
-Inject custom-adblock.js
-        ↓
-Continuous DOM Cleanup
 ```
 
 ---
@@ -95,7 +83,6 @@ Continuous DOM Cleanup
 ## ⚙️ Performance
 
 * Reduced startup latency via caching
-* Optimized script injection timing
 * Singleton-style adblocker design
 * Minimal runtime overhead
 
@@ -126,7 +113,6 @@ sudo dpkg -i youtube*.deb
 YouTubeApp/
 ├── assets/
 ├── scripts/
-│   └── custom-adblock.js
 ├── main.js
 ├── preload.js
 ├── index.html
