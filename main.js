@@ -67,9 +67,6 @@ function createTray() {
 }
 
 function configureWindow(win) {
-  // Quality selector script moved to custom-adblock.js to ensure it runs inside the webview's content context
-  // and doesn't clutter main.js or cause IPC overhead.
-
   win.on('closed', () => {
     mainWindow = null;
   });
@@ -121,7 +118,7 @@ async function createMainWindow(showImmediately = true) {
   app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
 
   // Start adblocker setup (now cached for faster startup)
-  setupAdblocker(session.defaultSession).catch(err => {
+  await setupAdblocker(session.defaultSession).catch(err => {
     console.error('Adblocker setup failed:', err);
   });
 

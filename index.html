@@ -468,23 +468,6 @@
         showToast('Reloading…');
       });
 
-      // Inject custom adblock script into webview after navigation
-      // This is non-blocking and only runs on YouTube domains
-      webview.addEventListener('did-navigate', injectCustomAdblock);
-      webview.addEventListener('did-navigate-in-page', injectCustomAdblock);
-      webview.addEventListener('dom-ready', injectCustomAdblock);
-      async function injectCustomAdblock() {
-        const url = webview.getURL();
-        if (!/youtube\.com/.test(url)) return;
-        // Fetch and inject script asynchronously, non-blocking
-        fetch('scripts/custom-adblock.js')
-          .then(res => {
-            if (!res.ok) throw new Error('Adblock script failed to load');
-            return res.text();
-          })
-          .then(script => webview.executeJavaScript(script, false))
-          .catch(err => console.error('Failed to inject custom adblock:', err));
-      } // End custom adblock injection
 
 
       // Dropdown closes when clicking outside
