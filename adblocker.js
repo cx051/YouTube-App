@@ -55,16 +55,32 @@ async function setupAdblocker(session) {
 
     // We try to load from cache for speed
     if (cacheValid) {
-      console.log('Adblocker: Loading from cache...');
+      console.log(`Adblocker: Loading from cache (${CACHE_PATH})...`);
       const buffer = await fs.promises.readFile(CACHE_PATH);
       blocker = ElectronBlocker.deserialize(buffer);
+      console.log('Adblocker: Engine deserialized from cache.');
     } else {
       console.log('Adblocker: Loading from lists (first time or lists updated)...');
-      blocker = await ElectronBlocker.fromLists(fetch, AD_FILTER_LISTS);
-      const buffer = Buffer.from(blocker.serialize());
-      await fs.promises.writeFile(CACHE_PATH, buffer);
-      await fs.promises.writeFile(LISTS_HASH_PATH, currentHash);
-      console.log('Adblocker: Engine cached.');
+
+      // Implement a 15-second timeout for list fetching
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        blocker = await ElectronBlocker.fromLists((url, opts) => fetch(url, { ...opts, signal: controller.signal }), AD_FILTER_LISTS);
+        clearTimeout(timeoutId);
+
+        const buffer = Buffer.from(blocker.serialize());
+        await fs.promises.writeFile(CACHE_PATH, buffer);
+        await fs.promises.writeFile(LISTS_HASH_PATH, currentHash);
+        console.log('Adblocker: Engine fetched and cached successfully.');
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          console.error('Adblocker: Fetching filter lists timed out after 15 seconds.');
+        }
+        throw fetchError; // Re-throw to trigger fallback
+      }
     }
 
     blocker.enableBlockingInSession(session);
