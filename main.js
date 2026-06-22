@@ -18,6 +18,9 @@ app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
+// Enable hardware video acceleration if available
+app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
+
 // Load settings and apply hardware acceleration
 const settings = settingsManager.getSettings();
 if (!settings.hardwareAcceleration) {
@@ -111,11 +114,6 @@ async function createMainWindow(showImmediately = true) {
       enableBlinkFeatures: 'HardwareMediaKeyHandling,VideoPlaybackQuality',
     },
   });
-
-  // Reduce memory/cpu usage with Electron flags
-  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=128');
-  app.commandLine.appendSwitch('disable-software-rasterizer');
-  app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,VaapiVideoEncoder');
 
   // Start adblocker setup (now cached for faster startup)
   await setupAdblocker(session.defaultSession).catch(err => {

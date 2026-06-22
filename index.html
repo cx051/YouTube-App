@@ -468,6 +468,21 @@
         showToast('Reloading…');
       });
 
+      // Error and crash handling
+      webview.addEventListener('did-fail-load', (e) => {
+        // -3 is aborted (e.g. by user), usually safe to ignore
+        if (e.errorCode === -3) return;
+        console.error('Webview failed to load:', e.errorDescription, e.validatedURL);
+        showToast(`Failed to load: ${e.errorDescription}`, 'error');
+      });
+
+      webview.addEventListener('render-process-gone', (e) => {
+        console.error('Webview renderer process gone:', e.reason);
+        showToast(`Renderer error: ${e.reason}`, 'error');
+        // Auto-reload after crash
+        setTimeout(() => webview.reload(), 2000);
+      });
+
 
 
       // Dropdown closes when clicking outside
