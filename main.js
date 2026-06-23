@@ -7,6 +7,12 @@ const settingsManager = require('./settings-manager');
 
 // Handle unhandled promise rejections globally
 process.on('unhandledRejection', (reason, promise) => {
+  // Silence "Script failed to execute" errors as they are usually non-critical adblocker failures
+  const message = reason instanceof Error ? reason.message : String(reason);
+  if (message.includes('Script failed to execute')) {
+    console.debug('Caught non-critical script execution failure:', message);
+    return;
+  }
   console.error('Unhandled Rejection:', reason);
 });
 
