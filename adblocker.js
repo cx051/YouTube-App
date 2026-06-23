@@ -83,6 +83,7 @@ async function setupAdblocker(session) {
       }
     }
 
+    wrapBlocker(blocker);
     blocker.enableBlockingInSession(session);
     currentBlocker = blocker;
     console.log('Adblocker successfully enabled with aggressive lists.');
@@ -92,6 +93,7 @@ async function setupAdblocker(session) {
     // Fallback if anything goes wrong
     try {
       const fallbackBlocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+      wrapBlocker(fallbackBlocker);
       fallbackBlocker.enableBlockingInSession(session);
       currentBlocker = fallbackBlocker;
       return fallbackBlocker;
@@ -99,6 +101,54 @@ async function setupAdblocker(session) {
       console.error('Adblocker: Fallback failed:', fallbackError);
     }
   }
+}
+
+/**
+ * Wraps the blocker's cosmetic filter injection to catch script execution errors.
+ * This prevents unhandled rejections when YouTube's CSP or other factors cause
+ * adblocker scriptlets to fail.
+ */
+function wrapBlocker(blocker) {
+  if (!blocker || !blocker.onInjectCosmeticFilters) return blocker;
+
+  const original = blocker.onInjectCosmeticFilters;
+  blocker.onInjectCosmeticFilters = function(event, url, msg) {
+    // Wrap the event object to intercept sender.executeJavaScript
+    const proxyEvent = new Proxy(event, {
+      get(target, prop) {
+        if (prop === 'sender') {
+          return new Proxy(target.sender, {
+            get(senderTarget, senderProp) {
+              const val = senderTarget[senderProp];
+              if (typeof val === 'function' && (senderProp === 'executeJavaScript' || senderProp === 'insertCSS')) {
+                return (...args) => {
+                  try {
+                    const result = val.apply(senderTarget, args);
+                    if (result && typeof result.catch === 'function') {
+                      return result.catch((err) => {
+                        // Silently catch scriptlet/CSS injection failures
+                        console.debug(`Adblocker: ${senderProp} failed (silenced):`, err.message || err);
+                      });
+                    }
+                    return result;
+                  } catch (e) {
+                    // Handle immediate throws
+                    return Promise.resolve();
+                  }
+                };
+              }
+              return typeof val === 'function' ? val.bind(senderTarget) : val;
+            }
+          });
+        }
+        return target[prop];
+      }
+    });
+
+    return original.call(blocker, proxyEvent, url, msg);
+  };
+
+  return blocker;
 }
 
 module.exports = { setupAdblocker };
