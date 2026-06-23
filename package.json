@@ -1,6 +1,6 @@
 {
   "name": "youtube",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "YouTube app with ad blocker and performance optimizations",
   "main": "main.js",
   "author": "cx051",
