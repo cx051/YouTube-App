@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import DropdownMenu from './DropdownMenu.jsx';
+import DropdownMenu from '../components/DropdownMenu.jsx';
 
 function DropdownRoot() {
   const [open, setOpen] = useState(false);
@@ -17,7 +17,17 @@ function DropdownRoot() {
     setOpen(false);
     if (id === 'toggle-hwaccel') {
       if (window.electronAPI && window.electronAPI.toggleHardwareAcceleration) {
-        window.electronAPI.toggleHardwareAcceleration().then(setHwAccelEnabled);
+        window.electronAPI.toggleHardwareAcceleration().then(result => {
+          setHwAccelEnabled(result.enabled);
+          if (result.restartRequired) {
+            // Trigger restart modal if available in global scope or via event
+            const hwaccelToggle = document.getElementById('hwaccel-toggle');
+            if (hwaccelToggle) {
+               hwaccelToggle.checked = result.enabled;
+               hwaccelToggle.dispatchEvent(new Event('change'));
+            }
+          }
+        });
       }
       return;
     }

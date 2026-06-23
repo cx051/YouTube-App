@@ -1,5 +1,7 @@
 const { app, BrowserWindow, session, ipcMain, Tray, Menu } = require('electron');
 const path = require('path');
+// Use userland punycode to avoid deprecation warning
+require('punycode');
 const { setupAdblocker } = require('./adblocker');
 const settingsManager = require('./settings-manager');
 
@@ -237,6 +239,18 @@ ipcMain.handle('set-hardware-acceleration', async (_event, enabled) => {
 
   settingsManager.updateSetting('hardwareAcceleration', enabled);
   return { restartRequired: true, enabled };
+});
+
+ipcMain.handle('toggle-hardware-acceleration', async () => {
+  try {
+    const settings = settingsManager.getSettings();
+    const newValue = !settings.hardwareAcceleration;
+    settingsManager.updateSetting('hardwareAcceleration', newValue);
+    return { restartRequired: true, enabled: newValue };
+  } catch (error) {
+    console.error('IPC toggle-hardware-acceleration error:', error);
+    return { restartRequired: false, enabled: false };
+  }
 });
 
 // IPC handler for app restart (hardware acceleration modal)
