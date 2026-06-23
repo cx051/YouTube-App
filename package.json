@@ -16,6 +16,7 @@
     "@ghostery/adblocker-electron": "^2.14.1",
     "cross-fetch": "^4.1.0",
     "framer-motion": "^12.36.0",
+    "punycode": "^2.3.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
@@ -32,7 +33,9 @@
       "main.js",
       "preload.js",
       "adblocker.js",
+      "settings-manager.js",
       "scripts/**/*",
+      "components/**/*",
       "assets/**/*",
       "node_modules/@ghostery/adblocker-electron/**/*"
     ],
