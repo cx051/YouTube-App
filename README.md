@@ -33,8 +33,6 @@ It uses **comprehensive filter-list based ad blocking** to ensure minimal interr
 
 ---
 
-**v2.0.0** is currently the most stable release.
-Ad-blocking functionality and overall performance are only guaranteed for this version and later. Versions prior to v2.0.0 may have inconsistent or degraded ad-blocking behavior and are not recommended for use.
 
 ## ✨ Features
 
